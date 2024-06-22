@@ -1,4 +1,4 @@
-import Activate from '@/components/Activate'
+import Activate from '@/components/Authen/Activate'
 import React from 'react'
 
 const ActivatePage = ({ params }: { params: {uid: string, token: string }}) => {

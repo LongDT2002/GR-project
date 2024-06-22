@@ -1,3 +1,4 @@
+from rest_framework import pagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,7 +13,7 @@ from .serializer import (
     MovieBannerSerializer,
     MovieImageSerializer,
     MovieVideoSerializer,
-    MovieActorSerializer,
+    MovieCastSerializer,
     MovieSliceSerializer
 )
 
@@ -54,7 +55,7 @@ class MovieActorView(APIView):
 
     def get(self, request, pk):
         movie = Movie.objects.get(pk=pk)
-        serializer = MovieActorSerializer(movie)
+        serializer = MovieCastSerializer(movie)
         return Response(serializer.data)
 
 
@@ -67,14 +68,27 @@ class GenreListView(APIView):
         return Response(serializer.data)
 
 
-class MovieByGenreView(APIView):
+class MyPagination(pagination.PageNumberPagination):
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+               'next': self.get_next_link(),
+               'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,
+            'results': data
+        })
+
+
+class MovieByGenreView(APIView, MyPagination):
     permission_classes = [AllowAny]
 
     def get(self, request, pk):
-        data = Movie_Genre.objects.all().filter(genre=pk)
-        return Response({
-            "result": [MovieBannerSerializer(Movie.objects.get(movie=movie.movie)) for movie in data]
-        })
+        data = Movie_Genre.objects.filter(genre=pk)
+        res = [MovieSliceSerializer(movie.movie).data for movie in data]
+        serializer = self.paginate_queryset(res, request)
+        return self.get_paginated_response(serializer)
 
 
 class TrendingMoviesView(APIView):
@@ -88,15 +102,16 @@ class TrendingMoviesView(APIView):
         return Response(serializer.data)
 
 
-class LatestMoviesView(APIView):
+class LatestMoviesView(APIView, MyPagination):
     permission_classes = [AllowAny]
 
     def get(self, request):
         movie = Movie.objects.prefetch_related(
             Prefetch('movieimage_set', queryset=MovieImage.objects.filter(type__in=['poster']))
-        ).all().order_by('-release_date')[:15]
-        serializer = MovieSliceSerializer(movie, many=True)
-        return Response(serializer.data)
+        ).all().order_by('-release_date')
+        res = self.paginate_queryset(movie, request)
+        serializer = MovieSliceSerializer(res, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 class TopRatedMoviesView(APIView):
@@ -128,6 +143,16 @@ class RecommendMoviesView(APIView):
         return Response(result)
 
 
+class RelatedMoviesView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        
+        related = Movie.objects.filter(pk=25).exclude(pk=pk)
+        serializer = MovieSliceSerializer(related, many=True)
+        return Response(serializer.data)
+
+
 from elasticsearch_dsl import Q
 from .documents import MovieDocument
 
@@ -143,13 +168,8 @@ class SearchMovieView(APIView):
         q = self.generate_q_expression(query)
         if not q:
             return Response({"error": "query is required"}, status=400)
-        
         search = self.document_class.search().query(q)
         response = search.execute()
         hits = response.hits.hits
-        for hit in hits:
-            hit = hit.to_dict()
-            hit["_source"]['id'] = hit["_id"]
-            
-        serializer = MovieBannerSerializer([hit["_source"] for hit in hits], many=True)
-        return Response(serializer.data)
+        result = [hit.to_dict().get('_source') for hit in hits]
+        return Response(result)

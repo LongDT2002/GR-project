@@ -7,8 +7,6 @@ import "slick-carousel/slick/slick-theme.css";
 import Link from "next/link";
 import axios from "axios";
 
-import requests from "@/utils/requests";
-
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
 
 const bannerpath = "https://image.tmdb.org/t/p/original";
@@ -110,7 +108,7 @@ const Banner = ({ bannerContent }: { bannerContent: any[] }) => {
                             <li className="list-disc">
                                 <span className="flex items-center flex-row ">
                                     <span className="material-icons mr-2 text-sm">star</span>
-                                    {firstbannerContent.ave_rate.toFixed(1) + "/ " + "10"}
+                                    {firstbannerContent.ave_rate.toFixed(1) + "/ " + "5.0"}
                                 </span>
                             </li>
                         </ul>

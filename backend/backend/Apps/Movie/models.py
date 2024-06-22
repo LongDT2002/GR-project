@@ -67,7 +67,7 @@ class Movie(models.Model):
 
 class Movie_Actor(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="movie_actor")
-    actor = models.ForeignKey("Actor.Actor", on_delete=models.CASCADE)
+    actor = models.ForeignKey("Actor.Actor", on_delete=models.CASCADE, related_name="actor_movie")
     character_name = models.CharField(max_length=50)
 
 
@@ -78,12 +78,12 @@ class Movie_Genre(models.Model):
 
 class MovieVideo(models.Model):
     TYPE_CHOICES = [
-        ("Trailers", "Trailers"),
-        ("Teasers", "Teasers"),
-        ("Clips", "Clips"),
-        ("Behind the Scene", "Behind the Scene"),
-        ("Bloopers", "Bloopers"),
-        ("Featurettes", "Featurettes"),
+        ("Trailer", "Trailer"),
+        ("Teaser", "Teaser"),
+        ("Clip", "Clip"),
+        ("Behind the Scenes", "Behind the Scenes"),
+        ("Blooper", "Blooper"),
+        ("Featurette", "Featurette"),
         ("Opening Credits", "Opening Credits"),
     ]
 

@@ -1,28 +1,30 @@
 'use client'
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { BiHome, BiMoviePlay, BiSearchAlt, BiSolidLogOut, BiTv } from "react-icons/bi";
-import { FaTheaterMasks } from "react-icons/fa";
+import { FaTheaterMasks, FaFortAwesomeAlt } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 import { checkAuthenticated } from "@/actions/auth";
-import MySpaceIcon from "./MySpaceIcon";
 
 const Navbar = () => {
     const [user, setUser] = useState(false);
-    useEffect(() => { const fetchData = async () => {
-        const isAuthenticated = await checkAuthenticated();
-        setUser(isAuthenticated as boolean);
-    };  
+    useEffect(() => { 
+        const fetchData = async () => {
+            const isAuthenticated = await checkAuthenticated();
+            if (isAuthenticated) {
+                setUser(isAuthenticated as boolean);
+            } else {
+                localStorage.removeItem("token");
+            }
+        };  
         fetchData();
     }, [user]);
 
     const router = useRouter();
-
     const logout = () => {
         localStorage.removeItem("token");
-        router.push("/login");
+        router.push("/auth/login");
     };
 
     return (
@@ -62,15 +64,15 @@ const Navbar = () => {
                         href={ user ? ("/myspace/overview") : ("/auth/login") }
                         className="flex items-center link-container hover:text-white"
                     >   
-                        <MySpaceIcon />
+                        <FaFortAwesomeAlt className="p-3 text-5xl"/>
                         <span className="navtext hidden font-bold">My Space</span>
                     </Link>                    
 
-                    {user ? ( <button onClick={logout}
+                    { user ? ( <button onClick={logout}
                         className="flex items-center link-container hover:text-white">
                         <BiSolidLogOut className="p-3 text-5xl" />
                         <span className="navtext hidden font-bold">Logout</span>
-                    </button> ) : <></>}
+                    </button> ) : <></> }
                     
                 </div>
             </div>

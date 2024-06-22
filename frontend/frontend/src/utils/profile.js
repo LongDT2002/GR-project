@@ -1,7 +1,7 @@
-const base = 'account/profile/';
+const base = '/account/profile/';
 
 const profile_request = {
-    fetchProfile: base + 'view/',
+    fetchProfile: base + 'personal/view/',
     fetchUpdateProfile: base + 'update/',
     fetchUpdatePassword: base + 'change_password/',
 }

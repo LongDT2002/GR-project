@@ -10,8 +10,8 @@ const UpcomingRelease = ({ upcomingdata }: { upcomingdata: any[] }) => {
 
     for (let i = 0; i < maxIndex; i++) {
 
-        if (upcomingMovieData[i].poster_path != null && upcomingMovieData[i].poster_path != '' && upcomingMovieData[i].poster_path != undefined) {
-            UpcomingArr.push(upcomingMovieData[i].poster_path);
+        if (upcomingMovieData[i].images.poster != null && upcomingMovieData[i].images.poster != '' && upcomingMovieData[i].images.poster != undefined) {
+            UpcomingArr.push(upcomingMovieData[i].images.poster);
         }
     }
 
@@ -31,7 +31,7 @@ const UpcomingRelease = ({ upcomingdata }: { upcomingdata: any[] }) => {
                 <div className='bg-gradient-to-br from-black via-gray-700 flex items-center justify-end px-5 to-slate-900 w-3/4'>
                     <div className="text_container z-30 text-right  md:px-5 px-1">
                         <h1 className='md:text-2xl text-lg font-normal'>Explore Upcoming Movies <br />of this week</h1>
-                        <Link href={'/upcoming/1'}><button type="button" className="text-gray-900 my-3 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Expore</button></Link>
+                        <Link href={'/upcoming/1'}><button type="button" className="text-gray-900 my-3 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Expore</button></Link>
                     </div>
                 </div>
             </div>

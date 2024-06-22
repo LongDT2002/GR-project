@@ -7,4 +7,4 @@ class Rate(models.Model):
     account = models.ForeignKey("Account.Account", on_delete=models.CASCADE)
     movie = models.ForeignKey("Movie.Movie", on_delete=models.CASCADE)
     rate = models.IntegerField(default=0, validators=[MaxValueValidator(5), MinValueValidator(1)])
-    timestamp = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)

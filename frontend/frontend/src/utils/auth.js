@@ -8,7 +8,7 @@ const auth_request = {
     fetchResetPassword: base + 'users/reset_password/',
     fetchResetPasswordConfirm: base + 'users/reset_password_confirm/',
 
-    fetchLogin: base + 'jwt/create/',
+    fetchLogin: base + 'api/token/',
     fetchRefresh: base + 'jwt/refresh/',
     fetchVerify: base + 'jwt/verify/',
 }

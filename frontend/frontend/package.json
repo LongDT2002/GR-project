@@ -9,6 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/styled": "^11.11.5",
+    "@headlessui/react": "^2.1.0",
+    "@heroicons/react": "^2.1.4",
+    "@mui/material": "^5.15.20",
     "autoprefixer": "^10.4.19",
     "axios": "^1.6.8",
     "embla-carousel-autoplay": "^8.0.4",
@@ -23,12 +27,14 @@
     "react-select-country-list": "^2.2.3",
     "react-slick": "^0.30.2",
     "react-stars": "^2.2.5",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "tailwind-datepicker-react": "^1.4.3"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/react-select-country-list": "^2.2.3",
     "@types/react-slick": "^0.23.13",
     "eslint": "^8",
     "eslint-config-next": "14.2.1",

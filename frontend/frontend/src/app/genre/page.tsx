@@ -2,18 +2,17 @@ import React from "react";
 import axios from "axios";
 
 import Link from "next/link";
-import movie_request from "../../utils/movie";
+import requests from "@/utils/requests";
 
 axios.defaults.baseURL = 'http://127.0.0.1:8000';
 
 async function getGenreResponse() {
-  const GenreApiresponse = await axios.get(movie_request.fetchGenreList);
-
-  if (GenreApiresponse.status !== 200) {
-    return new Error("data not fetching!");
-  }
-  
-  return GenreApiresponse.data;
+    const GenreApiresponse = await axios.get(requests.fetchGenreList);
+    if (GenreApiresponse.status !== 200) {
+        return new Error("data not fetching!");
+    }
+    
+    return GenreApiresponse.data;
 }
 
 const Genre = async () => {

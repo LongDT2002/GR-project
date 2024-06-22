@@ -1,6 +1,9 @@
 from rest_framework import serializers
+from django.db.models import Prefetch
+
 from .models import Movie, Genre, MovieImage, MovieVideo, Movie_Actor, Movie_Genre
-from ..Actor.models import Actor, ActorImage
+from ..Actor.models import ActorImage
+from ..Actor.serializer import ActorSliceSerializer
 
 
 class MovieUpdateSerializer(serializers.ModelSerializer):
@@ -16,12 +19,9 @@ class MovieSerializer(serializers.ModelSerializer):
     trailer = serializers.SerializerMethodField()
     
     def get_genres(self, obj):
-        genre_list = Movie_Genre.objects.filter(movie=obj)
-        genres = [Genre.objects.get(id=genre.genre.id) for genre in genre_list]
-        return [{
-            "id": genre.id,
-            "name": genre.name 
-        } for genre in genres]
+        genres = Movie_Genre.objects.filter(movie=obj)
+        genre_list = [GenreSerializer(genre.genre).data for genre in genres]
+        return genre_list
     
     def get_director(self, obj):
         return {"id": obj.director.id, "name": obj.director.name}
@@ -35,42 +35,43 @@ class MovieSerializer(serializers.ModelSerializer):
         for image in obj.movieimage_set.all():
             if image.type in images:
                 images[image.type] = image.image.url
+            if all(images.values()):
+                break
         return images
 
     def get_trailer(self, obj):
-        trailer = {
-            "link": None,
-        }
         for video in obj.movievideo_set.all():
             if video.type == "Trailer":
-                trailer["link"] = video.link.url
-                break
-        return trailer
-    
+                return video.link.url
+        return None
+        
     class Meta:
         model = Movie
         fields = '__all__'
 
 
-class MovieActorSerializer(serializers.ModelSerializer):
-    actors = serializers.SerializerMethodField()
+class MovieActorDetailSerializer(serializers.ModelSerializer):
+    actor = serializers.SerializerMethodField()
     
+    def get_actor(self, obj):
+        actor = obj.actor
+        serializer = ActorSliceSerializer(actor)
+        return serializer.data
+    
+    class Meta:
+        model = Movie_Actor
+        fields = ['actor', 'character_name']
+
+
+class MovieCastSerializer(serializers.ModelSerializer):
+    actors = serializers.SerializerMethodField()
+
     def get_actors(self, obj):
-        datas = Movie_Actor.objects.filter(movie=obj)[:10]
-        actors = []
-        for data in datas:
-            actor = Actor.objects.get(id=data.actor.id)
-            try:
-                image = ActorImage.objects.filter(actor=actor)[:1].get().image.url
-            except:
-                image = None
-            actors.append({
-                "id": actor.id,
-                "name": actor.name,
-                "image": image,
-                "character": data.character_name
-            })
-        return actors
+        movie_actors = Movie_Actor.objects.filter(movie=obj).select_related('actor').prefetch_related(
+            Prefetch('actor__actor_images', queryset=ActorImage.objects.all())
+        )
+        serializer = MovieActorDetailSerializer(movie_actors, many=True)
+        return serializer.data
 
     class Meta:
         model = Movie
@@ -114,27 +115,24 @@ class VideoSerializer(serializers.ModelSerializer):
 
 
 class MovieVideoSerializer(serializers.Serializer):
-    Trailer = serializers.ListField(child=VideoSerializer())
-    Teaser = serializers.ListField(child=VideoSerializer())
-
     def to_representation(self, obj):
         videos = MovieVideo.objects.filter(movie=obj)
         trailer = videos.filter(type='Trailer')
         teaser = videos.filter(type='Teaser')
-        clips = videos.filter(type='Clips')
-        behind_the_scene = videos.filter(type='Behind the Scene')
-        bloopers = videos.filter(type='Bloopers')
-        featurettes = videos.filter(type='Featurettes')
+        clips = videos.filter(type='Clip')
+        behind_the_scene = videos.filter(type='Behind the Scenes')
+        bloopers = videos.filter(type='Blooper')
+        featurettes = videos.filter(type='Featurette')
         opening_credits = videos.filter(type='Opening Credits')
 
         return {
-            'trailer': VideoSerializer(trailer, many=True).data,
-            'teaser': VideoSerializer(teaser, many=True).data,
+            'trailers': VideoSerializer(trailer, many=True).data,
+            'teasers': VideoSerializer(teaser, many=True).data,
             'clips': VideoSerializer(clips, many=True).data,
-            'behind the Scene': VideoSerializer(behind_the_scene, many=True).data,
+            'behind_the_scenes': VideoSerializer(behind_the_scene, many=True).data,
             'bloopers': VideoSerializer(bloopers, many=True).data,
             'featurettes': VideoSerializer(featurettes, many=True).data,
-            'opening Credits': VideoSerializer(opening_credits, many=True).data
+            'opening credits': VideoSerializer(opening_credits, many=True).data
         }
 
 

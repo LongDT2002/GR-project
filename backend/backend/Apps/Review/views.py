@@ -6,11 +6,13 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .serializer import (
     ReviewSerializer,
-    ReviewUpdateSerializer
+    ReviewUpdateSerializer,
+    ReviewPersonalViewSerializer
 )
 from .models import Review
 from ..Rate.models import Rate
-
+from ..Movie.models import Movie
+from ..Movie.serializer import MovieBannerSerializer
 
 # Create your views here.
 class ReviewListView(APIView):
@@ -18,6 +20,8 @@ class ReviewListView(APIView):
 
     def get(self, request, pk):
         reviews = Review.objects.filter(movie=pk)
+        movie = Movie.objects.get(pk=pk)
+        movie_serializer = MovieBannerSerializer(movie).data
         try:
             own = reviews.get(account=request.user)
             user_reviews = ReviewSerializer(own).data
@@ -33,6 +37,7 @@ class ReviewListView(APIView):
         rate_5 = all_rate.filter(rate=5).count()
 
         return Response({
+            'movie': movie_serializer,
             'reviews': serializer.data,
             'own': user_reviews,
             'chart': {
@@ -54,7 +59,7 @@ class ReviewPersonalView(APIView):
 
     def get(self, request):
         reviews = Review.objects.filter(account=request.user)
-        serializer = ReviewSerializer(reviews, many=True)
+        serializer = ReviewPersonalViewSerializer(reviews, many=True)
         return Response(serializer.data)
 
     def put(self, request):
@@ -79,7 +84,7 @@ class ReviewCreateView(APIView):
     def post(self, request, pk):
         request.data['movie'] = pk
         request.data['account'] = request.user.id
-        serializer = ReviewSerializer(data=request.data)
+        serializer = ReviewUpdateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

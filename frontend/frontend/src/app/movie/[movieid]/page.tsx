@@ -1,28 +1,21 @@
-import React from "react";
-import Image from "next/image";
-import Link from "next/link";
+"use client";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 import requests from "@/utils/requests";
-import CastCarousel from "@/components/Cast";
-import EmblaCarousel from "@/components/EmblaCarousel";
-// import OtherImageGallery from "@/components/OtherImageGallery";
-import WatchlistIcon from "@/components/WatchlistIcon";
-import ListIcon from "@/components/ListIcon";
-import Trailer from "@/components/Trailer";
-import Review from "@/components/Review";
-import Rate from "@/components/Rate";
+import CastCarousel from "@/components/EmblaCarousel/CastCarousel";
+import ReviewSlider from "@/components/MoviePage/ReviewSlider";
+import MovieDetail from "@/components/MoviePage/MovieDetail";
+import Media from "@/components/MoviePage/Media";
+import Loader from "@/components/Loader";
+import MovieCarousel from "@/components/EmblaCarousel/MovieCarousel";
 
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
-const bannerpath = "https://image.tmdb.org/t/p/original/";
-const posterpath = "https://image.tmdb.org/t/p/w500";
 
 async function getMovieResponse(movieid: string) {
     const api = requests.fetchMovieDetails + movieid + "/";
     try {
-        console.time("getMovieResponse")
         const response = await axios.get(api);
-        console.timeEnd("getMovieResponse")
         return response.data;
     } catch (error) {
         throw new Error("Error fetching movie data: " + error);
@@ -32,9 +25,7 @@ async function getMovieResponse(movieid: string) {
 async function getMovieCast(movieid: string) {
     const api = requests.fetchMovieDetails + movieid + "/actors/";
     try {
-        console.time("getMovieCast")
         const response = await axios.get(api);
-        console.timeEnd("getMovieCast")
         return response.data;
     } catch (error) {
         throw new Error("Error fetching movie cast: " + error);
@@ -51,6 +42,16 @@ async function getMovieImages(movieid: string) {
     }
 }
 
+async function getMovieVideos(movieid: string) {
+    const api = requests.fetchMovieDetails + movieid + "/videos/";
+    try {
+        const response = await axios.get(api);
+        return response.data;
+    } catch (error) {
+        throw new Error("Error fetching movie videos: " + error);
+    }
+}
+
 async function getMovieReview(movieid: string) {
     const api = requests.fetchMovieDetails + movieid + "/reviews/";
     try {
@@ -61,176 +62,90 @@ async function getMovieReview(movieid: string) {
     }
 }
 
-// async function getRecommendations(params: { movieid: string; }) {
-//     const Recommendations = await fetch(
-//         `${requests.fetchMovieDetails}${params.movieid}/recommendations?api_key=e4d2477534d5a54cb6f0847a0ee853eb`,
-//         {
-//             cache: "no-store",
-//         }
-//     );
+async function getRelatedMovie(movieid: string) {
+    const api = requests.fetchMovieDetails + movieid + "/related/";
+    try {
+        const response = await axios.get(api);
+        return response.data;
+    } catch (error) {
+        throw new Error("Error fetching movie reviews: " + error);
+    }
+}
 
-//     if (!Recommendations.ok) {
-//         return new Error("data not fetching!");
-//     }
+const Movie = ({ params }: { params: any }) => {
+    const [movieDataAll, setMovieDataAll] = useState<any>(null);
+    const [movieCast, setMovieCast] = useState<any>(null);
+    const [movieImages, setMovieImages] = useState<any>(null);
+    const [movieVideos, setMovieVideos] = useState<any>(null);
+    const [movieReview, setMovieReview] = useState<any>(null);
+    const [relatedMovies, setRelatedMovies] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-//     return Recommendations.json();
-// }
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [dataAll, cast, images, videos, review, related] = await Promise.all([
+                    getMovieResponse(params.movieid),
+                    getMovieCast(params.movieid),
+                    getMovieImages(params.movieid),
+                    getMovieVideos(params.movieid),
+                    getMovieReview(params.movieid),
+                    getRelatedMovie(params.movieid)
+                ]);
 
-// async function getSimilar(params: { movieid: string; }) {
-//     const similarMovies = await fetch(
-//         `${requests.fetchMovieDetails}${params.movieid}/similar?api_key=e4d2477534d5a54cb6f0847a0ee853eb`,
-//         {
-//             cache: "no-store",
-//         }
-//     );
-
-//     if (!similarMovies.ok) {
-//         return new Error("data not fetching!");
-//     }
-
-//     return similarMovies.json();
-// }
-
-const Movie = async ({ params }: { params: any }) => {
-    const movieDataAll = await getMovieResponse(params.movieid);
-    const movieCast = await getMovieCast(params.movieid);
-    const movieImages = await getMovieImages(params.movieid);
-    const movieReview = await getMovieReview(params.movieid);
-    
-
-    // // const recommendationsCall = await getRecommendations(params);
-    // const recommendations = recommendationsCall.results;
-    // // const similarmoviesCall = await getSimilar(params);
-    // const similarmovie = similarmoviesCall.results;
+                setMovieDataAll(dataAll);
+                setMovieCast(cast);
+                setMovieImages(images);
+                setMovieVideos(videos);
+                setMovieReview(review);
+                setRelatedMovies(related);
+                console.log(relatedMovies);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching movie data:', error);
+            }
+        };
+        fetchData();
+    }, [params.movieid]);
 
     function numberWithCommas(x: number) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
+    if (loading) {
+        return <Loader />
+    }
 
     return (
         <div className="overflow-visible">
-            <div className="bg-cover relative bg-fixed bg-center md:min-h-screen h-full w-full flex md:flex-row flex-col" style={movieDataAll.images.backdrop ? {
-                backgroundImage: `linear-gradient(to bottom, transparent, black),url(${bannerpath + movieDataAll.images.backdrop})`,
-            } : {}}>
-                <div className="imgContainer flex items-center p-3 justify-center flex-initial md:w-1/3 w-full">
-                    <Image
-                        src={movieDataAll.images &&
-                            movieDataAll.images.poster ? posterpath + movieDataAll.images.poster : ""}
-                        alt={movieDataAll.title}
-                        width={250}
-                        height={250}
-                        placeholder="blur"
-                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM0dgn9DwADSwHNRhjk3gAAAABJRU5ErkJggg=="
-                        priority
-                        unoptimized />
-                </div>
-                <div className="movieDetails p-3 flex items-center md:justify-start justify-center flex-initial overflow-x-hidden md:w-2/3 w-full">
-                    <div className="movieDetailsInner md:text-left text-center">
-                        {movieDataAll.images &&
-                            movieDataAll.images.logo && (
-                                <Image
-                                    src={`${posterpath}${movieDataAll.images.logo}`}
-                                    alt={movieDataAll.title}
-                                    height={150}
-                                    width={150}
-                                    className="md:mx-0 mx-auto"
-                                    unoptimized
-                                />
-                            )}
-                        <h1 className="text-4xl font-bold md:w-3/4 w-[90%] md:mx-0 mx-auto my-4">
-                            {movieDataAll.title}
-                        </h1>
-                        <p className="italic text-slate-300">
-                            {movieDataAll.tagline ? movieDataAll.tagline : ""}
-                        </p>
-                        <ul className="flex gap-5 text-slate-300 md:justify-start justify-center md:w-full w-[95%] md:mx-0 mx-auto px-2 overflow-x-scroll no-scrollbar">
-                            {movieDataAll.genres &&
-                                movieDataAll.genres.map((genre: any, index: React.Key | null | undefined) => (
-                                    <Link key={index} href={`/genre/${genre.id}/page/1`}>
-                                        <li className="my-4 px-3 py-1 rounded-3xl whitespace-nowrap bg-black w-fit text-sm">
-                                            {genre.name}
-                                        </li>
-                                    </Link>
-                                ))}
-                        </ul>
-                        <ul className="flex text-lg gap-5 text-slate-300 sm:justify-start justify-center my-2">
-                            <li>{movieDataAll.duration + " " + "Mins"}</li>
-                            <li className="list-disc">{movieDataAll.release_date}</li>
-                            <li className="list-disc">{movieDataAll.original_country}</li>
-                        </ul>
-                        <ul className="flex gap-5 text-slate-300 sm:justify-start justify-center my-4">
-                            <li className="text-2xl flex items-center text-slate-300 font-bold md:justify-start justify-center">
-                                <span className="material-icons pr-3">star</span>
-                                {movieDataAll.ave_rate.toFixed(1) + "/ " + "5.0"}
-                            </li>
-                            <li>
-                                <Rate movieId={movieDataAll.id} movieTitle={movieDataAll.title} />
-                            </li>
-                        </ul>
-                        <ul className="flex gap-5 text-slate-300 sm:justify-start justify-center my-2">
-                            <li className="flex items-center justify-center rounded-full bg-black p-4">
-                                <ListIcon favMovie={movieDataAll.id} />
-                            </li>
-                            <li className="flex items-center justify-center rounded-full bg-black p-4">
-                                <WatchlistIcon favMovie={movieDataAll.id} />
-                            </li>
-                            <li>
-                                <Trailer movieId={movieDataAll.id} />
-                            </li>
-                        </ul>
-                        <div>
-                            <h1 className="text-2xl">Summary</h1>
-                            <p className="text-lg font-light my-2 md:w-2/3 w-[95%] md:mx-0 mx-auto">{movieDataAll.summary}</p>
-                        </div>
-                        <div className="mt-4 inline-block">
-                            <Link className="text-2xl hover:underline cursor" href={`/cast/director/${movieDataAll.director.id}`}>{movieDataAll.director.name}</Link>
-                            <p className="text-lg font-light my-2 md:w-2/3 w-[95%] md:mx-0 mx-auto">
-                                Director
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <MovieDetail movieDataAll={movieDataAll} />
 
-            <div className="h-screen flex">
+            <div className="flex">
                 <div className="w-3/4 flex flex-col items-center">
                     <div className="w-[80%]">
-                        {/* <CastCarousel Casts={movieCast.actors} movieId={params.movieid} /> */}
+                        <CastCarousel Cast={movieCast.actors} movieId={params.movieid} />
                     </div>
-
                     <hr className="w-[80%] mx-auto my-4 border-t-2 border-gray-500" />
 
                     <div className="w-[80%]">
-                        {/* <Review Reviews={movieReview.reviews} movieId={params.movieid} /> */}
+                        <ReviewSlider Reviews={movieReview.reviews} movieId={params.movieid} />
                     </div>
+                    <hr className="w-[80%] mx-auto my-4 border-t-2 border-gray-500" />
 
-                    {/* <div className="otherImagesGalleryContainer">
-            <OtherImageGallery
-            GalleryImages={
-                movieImages.backdrops && movieImages.backdrops.slice(0, 6)
-            }
-            />
-        </div>  */}
-                    {/* <div className="latestReleases my-5 w-full ml-auto">
-                    <div className="md:ml-16 ml-0 latestinner h-full overflow-hidden">
-                        {similarmovie && similarmovie.length > 0 ? (
-                            <div className="heading">
-                                <h1 className="text-2xl my-3">Movies You May Like</h1>
+                    <div className="w-[80%]">
+                        <Media Images={movieImages.backdrops} Videos={movieVideos.trailers} movieId={params.movieid} />
+                    </div>
+                    <div className="w-[80%]">
+                        <section className="mx-auto mt-8 mb-4">
+                            <div className="flex heading justify-between">
+                                <div className="flex items-center space-x-2 mb-4">
+                                    <div className="w-1 rounded-sm h-full bg-white"></div>
+                                    <h1 className="text-3xl my-1">Related Movies</h1>
+                                </div>
                             </div>
-                        ) : null}
-                        <EmblaCarousel Categories={similarmovie} />
+                            <MovieCarousel Categories={relatedMovies} />
+                        </section>
+
                     </div>
-                </div>
-                <div className="latestReleases my-5 w-full ml-auto">
-                    <div className="md:ml-16 ml-0 latestinner h-full overflow-hidden">
-                        <div className="heading">
-                            {recommendations && recommendations.length > 0 ? (
-                                <h1 className="text-2xl my-3">Recommended Movies</h1>
-                            ) : null}
-                        </div>
-                        <EmblaCarousel Categories={recommendations} />
-                    </div>
-                </div> */}
                 </div>
 
                 <div className="w-1/4 flex flex-col">

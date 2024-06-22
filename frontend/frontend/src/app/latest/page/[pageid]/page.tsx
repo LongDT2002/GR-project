@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import Pagination from "@/components/Pagination";
 import Loader from "@/components/Loader";
 
-axios.defaults.baseURL = "http://127.0.0.1:8000/";
+axios.defaults.baseURL = "http://127.0.0.1:8000";
 const posterpath = "https://image.tmdb.org/t/p/original";
 
 function Latest({ params }: { params: { pageid: string } }) {
@@ -22,7 +22,7 @@ function Latest({ params }: { params: { pageid: string } }) {
     useEffect(() => {
         async function fetchData() {
             try {
-                const api = requests.fetchLatestMovies;
+                const api = requests.fetchLatestMovies + "?page=" + params.pageid;
                 const latestMovies = await axios.get(api)
                     .then((response) => {
                         return response.data;
@@ -31,7 +31,7 @@ function Latest({ params }: { params: { pageid: string } }) {
                         console.error("Error fetching movie data:", error);
                     });
                 const data = await latestMovies;
-                setResultMovie(data);
+                setResultMovie(data.results);
                 const totalpage = data.total_pages > 500 ? 500 : data.total_pages;
                 setTotalPages(totalpage);
                 setIsLoading(false);
@@ -58,13 +58,13 @@ function Latest({ params }: { params: { pageid: string } }) {
             </div>
             <div className="grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 md:w-[90%] w-[95%] mx-auto">
                 {resultMovie.map((moviename: any, index) => (
-                    moviename.images.poster && (
+                    moviename.poster && (
                         <div key={index} className="m-4 mb-8 px-4 mx-auto">
                             <div className="flex flex-col h-full rounded-lg bg-gray-200 shadow-lg">
                                 <Link href={`/movie/${moviename.id}`} className="flex flex-col flex-grow">
                                     <div className="oot-card p-2 flex-grow">
                                         <Image
-                                            src={posterpath + moviename.images.poster}
+                                            src={posterpath + moviename.poster}
                                             width={400}
                                             height={400}
                                             alt={`Movie_${index}`}
@@ -85,7 +85,6 @@ function Latest({ params }: { params: { pageid: string } }) {
                                             </p>
                                         </div>
                                         <p className="mb-4 text-md text-gray-700">Release: {moviename.release_date}</p>
-                                        <a href="#" className="mt-auto block rounded-lg bg-gray-500 px-4 py-2 text-center font-semibold text-white hover:bg-blue-600">Watch Trailer</a>
                                     </div>
                                 </Link>
                             </div>

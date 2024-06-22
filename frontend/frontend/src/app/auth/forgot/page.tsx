@@ -1,4 +1,4 @@
-import Forgot from '@/components/Forgot'
+import Forgot from '@/components/Authen/Forgot'
 import React from 'react'
 
 const LoginPage = () => {

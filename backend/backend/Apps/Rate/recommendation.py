@@ -68,9 +68,8 @@ class CF(object):
         for i in range(self.n_items):
             if i not in items_rated_by_u:
                 rating = self.__pred(u, i)
-                if rating > 0: 
-                    recommended_items.append(i)
-        
+                if rating > 0:
+                    recommended_items.append(i)        
         return recommended_items 
 
     def print_recommendation(self):

@@ -6,7 +6,10 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from ..Movie.models import Movie
 from ..Movie.serializer import MovieUpdateSerializer
 from .models import Rate
-from .serializer import RateSerializer
+from .serializer import (
+    RateSerializer,
+    AllPersonalRateSerializer
+)
 
 
 # Create your views here.
@@ -58,3 +61,10 @@ class RatePersonal(APIView):
         if movie_serializer.is_valid():
             movie_serializer.save()
         return Response({'message': 'Rate deleted'}, status=204)
+
+
+class AllPersonalRateView(APIView):
+    def get(self, request):
+        rate = Rate.objects.filter(account=request.user)
+        serializer = AllPersonalRateSerializer(rate, many=True)
+        return Response(serializer.data)

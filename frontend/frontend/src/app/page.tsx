@@ -1,6 +1,6 @@
 'use client';
 import Banner from "@/components/Banner";
-import EmblaCarousel from "@/components/EmblaCarousel";
+import MovieCarousel from "@/components/EmblaCarousel/MovieCarousel";
 import UpcomingRelease from "@/components/UpcomingRelease";
 import Loader from "@/components/Loader";
 import requests from "@/utils/requests";
@@ -8,9 +8,9 @@ import requests from "@/utils/requests";
 import { BiSolidChevronRight } from "react-icons/bi";
 import Link from "next/link";
 import axios from "axios";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-axios.defaults.baseURL = "http://127.0.0.1:8000/";
+axios.defaults.baseURL = "http://127.0.0.1:8000";
 
 async function getTrendingMovie() {
     const api = requests.fetchTrending;
@@ -111,17 +111,15 @@ const Home = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const trendingMovie = await getTrendingMovie();
-            const latestMovies = await getLatestMovies();
-            // const upComingMovies = await getUpcomingMovies();
-            // const UpcomingMoviesData = upComingMovies.results;
-            const topRated = await getTopRated();
-            const recommendMovies = await getRecommendMovies();
-            
-            await Promise.all([trendingMovieData, latestMoviesData, topRatedData, recommendMoviesData]);
+            const [trendingMovie, latestMovies, topRated, recommendMovies] = await Promise.all([
+                getTrendingMovie(),
+                getLatestMovies(), 
+                getTopRated(),
+                getRecommendMovies()
+            ]);
             
             setTrendingMovieData(trendingMovie);
-            setLatestMoviesData(latestMovies);
+            setLatestMoviesData(latestMovies.results);
             setTopRatedData(topRated);
             setRecommendMoviesData(recommendMovies);
             setLoading(false);
@@ -136,7 +134,7 @@ const Home = () => {
     return (
         <div>
             <Banner bannerContent={trendingMovieData} />
-            <div className="latestReleases my-5 w-full ml-auto">
+            <div className="my-5 w-full ml-auto">
                 <div className="sm:ml-16 ml-0 latestinner h-full overflow-hidden">
                     <div className="heading md:mx-0 mx-auto md:w-auto w-[90%]">
                         <div className="w-full flex justify-between items-center">
@@ -147,11 +145,11 @@ const Home = () => {
                         </div>
                     </div>
                     <div>
-                        <EmblaCarousel Categories={latestMoviesData} />
+                        <MovieCarousel Categories={latestMoviesData} />
                     </div>
                 </div>
             </div>
-            <div className="latestReleases my-5 w-full ml-auto">
+            <div className="my-5 w-full ml-auto">
                 <div className="sm:ml-16 ml-0 latestinner h-full overflow-hidden">
                     <div className="heading md:mx-0 mx-auto md:w-auto w-[90%]">
                         <div className="w-full flex justify-between items-center">
@@ -161,19 +159,18 @@ const Home = () => {
                             </Link>
                         </div>
                     </div>
-                    <EmblaCarousel Categories={topRatedData} />
+                    <MovieCarousel Categories={topRatedData} />
                 </div>
             </div>
 
             <div className="my-5 w-full ml-auto">
                 <div className="sm:ml-16 ml-0 latestinner h-full overflow-hidden">
-                    <div>Hello world</div>
-                    {/* <UpcomingRelease upcomingdata={UpcomingMoviesData} /> */}
+                    <UpcomingRelease upcomingdata={trendingMovieData} />
                 </div>
             </div>
 
             { recommendMoviesData ? (
-                <div className="latestReleases my-5 w-full ml-auto">
+                <div className="my-5 w-full ml-auto">
                     <div className="sm:ml-16 ml-0 latestinner h-full overflow-hidden">
                         <div className="heading md:mx-0 mx-auto md:w-auto w-[90%]">
                             <div className="w-full flex justify-between items-center">
@@ -183,7 +180,7 @@ const Home = () => {
                                 </Link>
                             </div>
                         </div>
-                        <EmblaCarousel Categories={recommendMoviesData} />
+                        <MovieCarousel Categories={recommendMoviesData} />
                     </div>
                 </div> ) : "" }
         </div>

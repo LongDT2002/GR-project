@@ -1,24 +1,29 @@
-import BigTextContent from "@/components/BigTextContent";
-import EmblaCarousel from "@/components/EmblaCarousel";
-import requests from "@/utils/requests";
+'use client';
+import React, { useEffect, useState } from 'react';
 import Image from "next/image";
 import axios from "axios";
+
+import BigTextContent from "@/components/BigTextContent";
+import MovieCarousel from "@/components/EmblaCarousel/MovieCarousel";
+import Loader from '@/components/Loader';
+import requests from "@/utils/requests";
+
 
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
 const personimgpath = "https://image.tmdb.org/t/p/original";
 
-async function getPersonDetails(params: any) {
-    const api = requests.fetchActorDetails + params.actorid + "/";
+async function getPersonDetails(actorid: string) {
+    const api = requests.fetchActorDetails + actorid + "/";
     const ActorApiresponse = await axios.get(api)
         .then((response) => {
             return response.data;
         })
-    
+
     return ActorApiresponse;
 }
 
-async function getPersonImages(params: any) {
-    const api = requests.fetchActorDetails + params.actorid + "/images/";
+async function getPersonImages(actorid: string) {
+    const api = requests.fetchActorDetails + actorid + "/images/";
     const PersonsImgresponse = await axios.get(api)
         .then((response) => {
             return response.data;
@@ -26,8 +31,8 @@ async function getPersonImages(params: any) {
 
     return PersonsImgresponse;
 }
-async function getPersonsMovie(params: any) {
-    const api = requests.fetchActorDetails + params.actorid + "/movies/";
+async function getPersonMovies(actorid: string) {
+    const api = requests.fetchActorDetails + actorid+ "/movies/";
     const PersonsMovieresponse = await axios.get(api)
         .then((response) => {
             return response.data;
@@ -36,24 +41,51 @@ async function getPersonsMovie(params: any) {
     return PersonsMovieresponse;
 }
 
-const Actor = async ({ params }: any) => {
-    const personDetails = await getPersonDetails(params);
-    const personimgCall = await getPersonImages(params);
-    const personMovies = await getPersonsMovie(params);
+const Actor = ({ params }: { params: any }) => {
+    const [personDetails, setPersonDetails] = useState<any>({});
+    const [personImages, setPersonImages] = useState<any>([]);
+    const [personMovies, setPersonMovies] = useState<any>([])
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [personData, personImgData, personMoviesData] = await Promise.all([
+                    getPersonDetails(params.actorid),
+                    getPersonImages(params.actorid),
+                    getPersonMovies(params.actorid)
+                ])
+
+                setPersonDetails(personData);
+                setPersonImages(personImgData);
+                setPersonMovies(personMoviesData);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching actor data:', error);
+            }
+        };
+        fetchData();
+    }, [params.actorid]);
+
+    if(loading){
+        return <Loader />
+    }
 
     return (
         <div>
             <div className="flex md:flex-row flex-col w-100 md:h-full py-10 md:my-0 my-5 h-full">
                 <div className="basis-1/3 h-full m-auto">
                     <div className="my-auto">
-                        <Image
-                            src={personimgpath + personimgCall[0].image}
-                            alt={personDetails.name}
-                            width={200}
-                            height={200}
-                            className="m-auto w-[300px] rounded-md"
-                            unoptimized
-                        />
+                        {personImages.length > 0 ? (
+                            <Image
+                                src={personimgpath + personImages[0].image}
+                                alt={personDetails.name}
+                                width={200}
+                                height={200}
+                                className="m-auto w-[300px]"
+                                unoptimized
+                            />) :
+                            <div></div>}
                         <h1 className="font-bold mt-3 text-xl text-center">
                             {personDetails.name}
                         </h1>
@@ -65,7 +97,6 @@ const Actor = async ({ params }: any) => {
                 <div className="flex-1 h-full my-auto mr-32 md:p-10 px-2 flex items-center justify-center">
                     <div className="person_details_container md:p-0 p-3 text-lg">
                         <p>
-                            {" "}
                             {personDetails.birthday != null ? (
                                 <span className="font-bold">Birthday: </span>
                             ) : (
@@ -74,7 +105,6 @@ const Actor = async ({ params }: any) => {
                             {personDetails.birthday}
                         </p>
                         <p>
-                            {" "}
                             {personDetails.deathday != null ? (
                                 <span className="font-bold">Day of Death: </span>
                             ) : (
@@ -83,7 +113,6 @@ const Actor = async ({ params }: any) => {
                             {personDetails.deathday}
                         </p>
                         <p>
-                            {" "}
                             {personDetails.place_of_birth != null ? (
                                 <span className="font-bold">Place Of Birth: </span>
                             ) : (
@@ -106,7 +135,7 @@ const Actor = async ({ params }: any) => {
                     </div>
                     <div className="latestReleases my-5 w-full ml-auto">
                         <div className="ml-0 latestinner h-full overflow-hidden">
-                            {(<EmblaCarousel Categories={personMovies} />)}
+                            {(<MovieCarousel Categories={personMovies} />)}
                         </div>
                     </div>
 

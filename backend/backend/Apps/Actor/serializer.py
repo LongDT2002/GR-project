@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Actor, ActorImage
-from ..Movie.models import Movie, Movie_Actor, MovieImage
+
+from ..Movie.models import Movie, MovieImage, Movie_Actor
+
 
 class ActorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,24 +10,26 @@ class ActorSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ActorMovieSerializer(serializers.ModelSerializer):
+class ActorImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActorImage
+        fields = ['id', 'image']
+
+
+class ActorSliceSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
 
     def get_images(self, obj):
         try:
-            poster = MovieImage.objects.filter(movie=obj, type="poster")[:1].get().image.url
+            images = obj.actor_images.all()[0]
+            serializer = ActorImageSerializer(images)
+            return serializer.data
         except:
-            poster = None
-        return {
-            'poster': poster
-        }
-
+            return None
+    
     class Meta:
-        model = Movie
-        fields = ('id', 'title', 'release_date', 'ave_rate', 'images')
+        model = Actor
+        fields = ('id', 'name', 'images')
 
 
-class ActorImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ActorImage
-        fields = '__all__'
+
