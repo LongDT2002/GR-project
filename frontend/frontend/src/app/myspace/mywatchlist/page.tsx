@@ -84,8 +84,8 @@ const Watchlist = () => {
                                     className="text-lg bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                 >
                                     <option value="date">Release Date</option>
-                                    <option value="name">Title</option>
-                                    <option value="rate">Rate</option>
+                                    <option value="name">Movie title</option>
+                                    <option value="rate">Average rate</option>
                                 </select>
                             </form>
                             <span className="text-zinc-700 text-xl"> Order:</span>

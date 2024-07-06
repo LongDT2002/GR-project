@@ -122,11 +122,11 @@ const Review = ({ params }: { params: { movieid: string } }) => {
                                                 <p className="text-lg font-medium text-white">Was it helpful to you?</p>
                                                 <div className="flex items-center">
                                                     <FaThumbsUp />
-                                                    <label htmlFor="reviews-radio-3" className="ms-2 text-lg font-medium text-gray-300"> 1 </label>
+                                                    <label htmlFor="reviews-radio-3" className="ms-2 text-lg font-medium text-gray-300">{review.vote.up}</label>
                                                 </div>
                                                 <div className="flex items-center">
                                                     <FaThumbsDown />
-                                                    <label htmlFor="reviews-radio-4" className="ms-2 text-lg font-medium text-gray-300">0 </label>
+                                                    <label htmlFor="reviews-radio-4" className="ms-2 text-lg font-medium text-gray-300">{review.vote.up}</label>
                                                 </div>
                                             </div>
                                         </div>

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Review
+from .models import Review, Vote
 from ..Rate.models import Rate
 from ..Profile.serializer import ProfileSerializer
 from ..Movie.serializer import MovieBannerSerializer
@@ -7,10 +7,19 @@ from ..Movie.serializer import MovieBannerSerializer
 class ReviewSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     rate = serializers.SerializerMethodField()
+    vote = serializers.SerializerMethodField()
 
     def get_user(self, obj):
-        account = obj.account
-        return ProfileSerializer(account.profile).data
+        return ProfileSerializer(obj.account.profile).data
+
+    def get_vote(self, obj):
+        all_vote = obj.vote_review.all()
+        up = all_vote.filter(vote=True).count()
+        down = all_vote.filter(vote=False).count()
+        return {
+            'up': up,
+            'down': down
+        }
 
     def get_rate(self, obj):
         try:
@@ -37,4 +46,10 @@ class ReviewPersonalViewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
+        fields = '__all__'
+
+
+class VoteReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vote
         fields = '__all__'

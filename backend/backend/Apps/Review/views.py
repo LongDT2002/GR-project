@@ -7,7 +7,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializer import (
     ReviewSerializer,
     ReviewUpdateSerializer,
-    ReviewPersonalViewSerializer
+    ReviewPersonalViewSerializer,
+    VoteReviewSerializer
 )
 from .models import Review
 from ..Rate.models import Rate
@@ -19,7 +20,7 @@ class ReviewListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, pk):
-        reviews = Review.objects.filter(movie=pk)
+        reviews = Review.objects.prefetch_related('vote_review').filter(movie=pk)
         movie = Movie.objects.get(pk=pk)
         movie_serializer = MovieBannerSerializer(movie).data
         try:
@@ -85,6 +86,31 @@ class ReviewCreateView(APIView):
         request.data['movie'] = pk
         request.data['account'] = request.user.id
         serializer = ReviewUpdateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReviewVoteView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def post(self, request, pk):
+        request.data['account'] = request.user.id
+        request.data['review'] = pk
+        serializer = VoteReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self, request):
+        request.data['account'] = request.user.id
+        review = Review.objects.get(pk=request.data['review'])
+        serializer = VoteReviewSerializer(review, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

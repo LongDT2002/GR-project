@@ -68,3 +68,5 @@ class AllPersonalRateView(APIView):
         rate = Rate.objects.filter(account=request.user)
         serializer = AllPersonalRateSerializer(rate, many=True)
         return Response(serializer.data)
+
+    
