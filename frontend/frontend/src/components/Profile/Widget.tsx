@@ -22,7 +22,6 @@ const Widget = () => {
     const [selectedTab, setSelectedTab] = useState('Overview');
     const [underlineStyle, setUnderlineStyle] = useState<React.CSSProperties>({});
     const tabs: Tab[] = [
-        // { name: 'Lists', url: '/myspace/lists' },
         { name: 'Watchlist', url: '/myspace/mywatchlist' }
     ];
     const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -106,7 +105,7 @@ const Widget = () => {
                                         </MenuItem>
                                         <MenuItem>
                                             {({ focus }) => (
-                                                <Link href="/myspace/recommendation"
+                                                <Link href="/myspace/recommendation/page/1"
                                                     className={classNames(focus ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-md')}
                                                 >
                                                     Recommendation

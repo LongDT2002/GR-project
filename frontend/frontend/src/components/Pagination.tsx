@@ -33,11 +33,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: { currentPage: nu
             <ol className="flex justify-center gap-1 text-xs font-medium">
                 {/* Previous Page Button */}
                 <li>
-
                     <button
                         onClick={() => onPageChange(currentPage - 1)}
-                        className={`inline-flex h-8 w-8 items-center justify-center rounded border ${currentPage === 1 ? 'border-gray-300' : 'border-gray-100'
-                            } bg-white text-gray-900 rtl:rotate-180`}
+                        className={`bg-gray-200 inline-flex h-8 w-8 items-center justify-center rounded border ${currentPage === 1 ? 'border-gray-300' : 'border-gray-100'
+                            } bg-gray-200 text-gray-900 rtl:rotate-180`}
                         disabled={currentPage === 1}
                     >
                         <span className="sr-only">Prev Page</span>
@@ -60,11 +59,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: { currentPage: nu
                 {pageNumbers.map((pageNumber, index) => (
                     <li key={index}>
                         {pageNumber === '...' ? (
-                            <span className="block h-8 w-8 text-center leading-8">...</span>
+                            <span className="block h-8 w-8 text-center leading-8 ">...</span>
                         ) : (
                             <button
                                 onClick={() => onPageChange(pageNumber)}
-                                className={`block h-8 w-8 rounded border ${pageNumber === currentPage ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-100 bg-white text-gray-900'
+                                className={`block h-8 w-8 rounded border ${pageNumber === currentPage ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-100 bg-gray-200 text-gray-900'
                                     } text-center leading-8`}
                             >
                                 {pageNumber}
@@ -77,8 +76,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: { currentPage: nu
                 <li>
                     <button
                         onClick={() => onPageChange(currentPage + 1)}
-                        className={`inline-flex h-8 w-8 items-center justify-center rounded border ${currentPage === pageNumbers.length ? 'border-gray-300' : 'border-gray-100'
-                            } bg-white text-gray-900 rtl:rotate-180`}
+                        className={`bg-gray-200 inline-flex h-8 w-8 items-center justify-center rounded border ${currentPage === pageNumbers.length ? 'border-gray-300' : 'border-gray-100'
+                            } bg-gray-200 text-gray-900 rtl:rotate-180`}
                         disabled={currentPage === pageNumbers.length}
                     >
                         <span className="sr-only">Next Page</span>

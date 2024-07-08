@@ -12,8 +12,6 @@ const Login = () => {
     const [messageType, setMessageType] = useState("danger");
 
     const router = useRouter();
-    const loginByGoogle = async () => {
-    };
 
     async function handleSubmit(event: { preventDefault: () => void; }) {
         event.preventDefault();
@@ -26,7 +24,8 @@ const Login = () => {
                 router.push("/myspace/overview");
             })
             .catch((err) => {
-                setMessage(err.data);
+                console.log(err)
+                setMessage(err.response.data.detail);
                 setMessageType("danger");
             });
     };

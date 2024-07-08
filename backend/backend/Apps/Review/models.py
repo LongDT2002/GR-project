@@ -19,3 +19,6 @@ class Vote(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='vote_review')
     vote = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('account', 'review')

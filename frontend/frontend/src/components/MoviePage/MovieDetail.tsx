@@ -50,7 +50,7 @@ const MovieDetail = ({ movieDataAll }: { movieDataAll: any }) => {
                         {movieDataAll.genres &&
                             movieDataAll.genres.map((genre: any, index: React.Key | null | undefined) => (
                                 <Link key={index} href={`/genre/${genre.id}/page/1`}>
-                                    <li className="my-2 px-3 py-1 rounded-3xl whitespace-nowrap bg-slate-800 w-fit text-lg">
+                                    <li className="my-2 px-3 py-1 rounded-3xl whitespace-nowrap bg-slate-800 w-fit text-md">
                                         {genre.name}
                                     </li>
                                 </Link>

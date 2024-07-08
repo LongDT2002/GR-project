@@ -5,6 +5,7 @@ const requests = {
     fetchTrending: "/movie/trending/",
     fetchLatestMovies: '/movie/latest/',
     fetchTopRated: "/movie/top_rated/",
+    fetchUpcoming: "/movie/upcoming/",
     fetchRecommend: "/movie/recommend/",
     fetchGenreList: "/movie/genres/",
     fetchMoviesByGenre: "/movie/genre/",
@@ -12,7 +13,6 @@ const requests = {
     fetchActorDetails: "/actor/",
     fetchDirectorDetails: "/director/",
 }
-
 
 export default requests
     

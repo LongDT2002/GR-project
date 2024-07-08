@@ -50,8 +50,8 @@ const Reviews = () => {
         return <Loader />
     }
 
-    function handleSort() {
-        switch (sortType) {
+    function handleSort(type: string) {
+        switch (type) {
             case "date":
                 return reviews.sort((a: any, b: any) => {
                     return (new Date(b.timestamp) as any) - (new Date(a.timestamp) as any);
@@ -61,7 +61,7 @@ const Reviews = () => {
                     return a.movie.title.localeCompare(b.movie.title);
                 });
             case "rate":
-                return reviews.sort((a: any, b: any) => parseFloat(a.movie.ave_rate) - parseFloat(b.movie.ave_rate));
+                return reviews.sort((a: any, b: any) => parseFloat(a.movie.ave_rate) - parseFloat(b.movie.ave_rate)).reverse();
             default:
                 return reviews;
         }
@@ -81,7 +81,9 @@ const Reviews = () => {
                                 <select
                                     value={sortType}
                                     onChange={(e) => {
-                                        setSortType(e.target.value); 
+                                        setSortType(e.target.value);
+                                        const sorted = handleSort(e.target.value);
+                                        setReviews([...sorted]);
                                     }}
                                     className="text-lg bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                 >
@@ -92,14 +94,14 @@ const Reviews = () => {
                             </form>
                             <span className="text-zinc-700 text-xl"> Order:</span>
                             <button onClick = {() => {
-                                const sorted = handleSort();
+                                const sorted = handleSort(sortType);
                                 setReviews([...sorted]);
                             }} className="text-zinc-700">↑</button>
                             
                             <span className="text-zinc-700 text-xl">|</span>
 
                             <button onClick = {() => {
-                                const sorted = handleSort().reverse();
+                                const sorted = handleSort(sortType).reverse();
                                 setReviews([...sorted]);
                             }} className="text-zinc-700">↓</button>
                         </div>
@@ -114,8 +116,8 @@ const Reviews = () => {
                                 <div className="h-48 min-w-[250px] overflow-visible">
                                     <Link href={`/movie/${review.movie.id}`}>
                                         <Image
-                                            src={posterpath + review.movie.images.poster}
-                                            alt={review.movie.images.poster}
+                                            src={posterpath + review.movie.poster}
+                                            alt={review.movie.poster}
                                             className="rounded-3xl shadow-lg"
                                             width={250}
                                             height={250}
@@ -168,7 +170,7 @@ const Reviews = () => {
                 </div>
             ) :
                 (
-                    <div className="px-[5%] h-screen">
+                    <div className="px-[5%] h-[60vh]">
                         <div className="px-4 pb-4">
                             <p className="text-zinc-700 text-xl">You haven't written a review yet.</p>
                         </div>

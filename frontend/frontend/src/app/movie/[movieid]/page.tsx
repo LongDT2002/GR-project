@@ -154,7 +154,9 @@ const Movie = ({ params }: { params: any }) => {
                             <li className="flex-col items-center gap-2">
                                 <p className="text-2xl">Status</p>
                                 <p className="text-lg font-light my-2 md:w-2/3 w-[95%] md:mx-0 mx-auto">
-                                    Released
+                                    {
+                                        movieDataAll.release_date > new Date().toISOString().split('T')[0] ? "Upcoming" : "Released"
+                                    }
                                 </p>
                             </li>
                             <li className="flex-col items-center gap-2">

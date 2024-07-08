@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import Rate
 from ..Movie.models import Movie
-from ..Movie.serializer import MovieBannerSerializer
+from ..Movie.serializer import MovieSliceSerializer
 
 class RateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,7 +14,7 @@ class AllPersonalRateSerializer(serializers.ModelSerializer):
     movie = serializers.SerializerMethodField()
 
     def get_movie(self, obj):
-        return MovieBannerSerializer(obj.movie).data
+        return MovieSliceSerializer(obj.movie).data
 
     class Meta:
         model = Rate

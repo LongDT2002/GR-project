@@ -74,9 +74,6 @@ const Review = ({ params }: { params: { movieid: string } }) => {
         return (value / max) * 100;
     };
 
-    
-
-
     if (loading) {
         return <Loader />;
     }

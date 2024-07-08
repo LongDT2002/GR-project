@@ -42,7 +42,7 @@ class RatePersonal(APIView):
             
     def put(self, request, pk):
         movie = Movie.objects.get(pk=request.data["movie"])
-        rate = Rate.objects.get(movie=movie, account=request.user)
+        rate = Rate.objects.select_related("movie").get(movie=movie, account=request.user)
         request.data["account"] = request.user.id
         serializer = RateSerializer(rate, data=request.data)
         if serializer.is_valid():
@@ -65,7 +65,7 @@ class RatePersonal(APIView):
 
 class AllPersonalRateView(APIView):
     def get(self, request):
-        rate = Rate.objects.filter(account=request.user)
+        rate = Rate.objects.select_related('account').filter(account=request.user)[:10]
         serializer = AllPersonalRateSerializer(rate, many=True)
         return Response(serializer.data)
 

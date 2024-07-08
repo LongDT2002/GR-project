@@ -1,6 +1,6 @@
 "use client"
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useState } from "react";
+import { resetPassword } from "@/actions/auth";
 
 const Forgot = () => {
     const [email, setEmail] = useState("");
@@ -8,16 +8,13 @@ const Forgot = () => {
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        const res = await fetch("http://localhost:3000/api/auth/forgot", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email }),
-        });
-        if (res.ok) {
-            setSent(true);
-        }
+        await resetPassword(email)
+            .then(() => {
+                setSent(true);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     return (
@@ -27,19 +24,12 @@ const Forgot = () => {
                     <div className="bg-neutral-700 p-5 flex rounded-2xl shadow-lg w-[95%] mx-auto md:max-w-md items-center justify-center">
                         <div className="w-full px-5">
                             <h2 className="text-3xl font-bold text-white">Reset password</h2>
-                            <form
+                            <div
                                 className="mt-6 text-black"
-                            // onSubmit={handleSubmit}
                             >
                                 <div className="text-2xl block text-white text-center">Verification has been sent.</div>
                                 <div className="text-2xl block text-white text-center">Please check your email.</div>
-                                <Link href='/login'
-                                    className="text-center w-full block bg-black hover:bg-black/75 focus:bg-black/50 text-white font-semibold rounded-lg
-                px-4 py-3 mt-6"
-                                >
-                                    Back to login
-                                </Link>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </section>) :
@@ -62,7 +52,6 @@ const Forgot = () => {
                                         value={email}
                                         onChange={(e) => {
                                             setEmail(e.target.value);
-                                            // handleInputChange();
                                         }}
                                         autoFocus
                                         autoComplete="true"

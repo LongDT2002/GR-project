@@ -30,20 +30,16 @@ const BigTextContent = ({ textData }: { textData: string }) => {
         ref
     });
     return (
-
         <div>
-            <span className="font-bold">Biography: </span>
-            <p className={`break-words transition text-justify text-base text-slate-300 duration-300 ${!isReadingMore && "line-clamp-5"
+            <p className={`break-words transition text-justify text-lg text-slate-300 duration-300 ${!isReadingMore && "line-clamp-5"
                 }`} ref={ref}>
                 {textData}
-
             </p>
             {isTruncated &&
                 (isReadingMore ? (
-                    <button className="font-bold" onClick={() => setIsReadingMore(false)}>Read less</button>
-
+                    <button className="font-bold text-lg" onClick={() => setIsReadingMore(false)}>Read less</button>
                 ) : (
-                    <button className="font-bold" onClick={() => setIsReadingMore(true)}>Read more</button>
+                    <button className="font-bold text-lg" onClick={() => setIsReadingMore(true)}>Read more</button>
                 ))}
         </div>
     );

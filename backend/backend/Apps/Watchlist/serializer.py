@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Watchlist_Movie
 
-from ..Movie.serializer import MovieBannerSerializer
+from ..Movie.serializer import MovieSliceSerializer
 
 
 class WatchlistSerializer(serializers.ModelSerializer):
@@ -11,7 +11,7 @@ class WatchlistSerializer(serializers.ModelSerializer):
         datas = Watchlist_Movie.objects.filter(watchlist=obj)
         movies = []
         for data in datas:
-            movie = MovieBannerSerializer(data.movie).data
+            movie = MovieSliceSerializer(data.movie).data
             movies.append(movie)
         return movies
 

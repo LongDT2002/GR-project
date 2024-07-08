@@ -9,7 +9,8 @@ from .recommendation import CF
 def recommend():
     data = Rate.objects.all()
     all_rate = RateSerializer(data, many=True).data
-    if data:
+
+    if len(all_rate) > 0:
         modified_data =[{k: item[k] for k in ['account', 'movie', 'rate', 'timestamp']} for item in all_rate]
         for item in modified_data:
             dt_object = datetime.strptime(item["timestamp"], "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -27,7 +28,7 @@ def recommend():
         rate_train = ratings_base.to_numpy()
         rate_train[:, :2] -= 1
 
-        rs = CF(rate_train, k = 40, uuCF = 0)
-        rs.fit()
-        return rs
+        res = CF(rate_train, k = 10, uuCF = 1)
+        res.fit()
+        return res
     return None

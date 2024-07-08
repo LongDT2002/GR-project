@@ -17,8 +17,6 @@ from .serializer import (
     MovieSliceSerializer
 )
 
-import random
-
 
 class MovieDetailView(APIView):
     permission_classes = [AllowAny]
@@ -114,27 +112,42 @@ class LatestMoviesView(APIView, MyPagination):
         return self.get_paginated_response(serializer.data)
 
 
-class TopRatedMoviesView(APIView):
+from datetime import datetime
+
+class UpcomingMoviesView(APIView, MyPagination):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        current_year = datetime.now().year
+        movie = Movie.objects.prefetch_related(
+            Prefetch('movieimage_set', queryset=MovieImage.objects.filter(type__in=['poster']))
+        ).filter(release_date__year=current_year).order_by('release_date')
+        serializer = MovieSliceSerializer(movie, many=True)
+        return Response(serializer.data)
+
+
+
+class TopRatedMoviesView(APIView, MyPagination):
     permission_classes = [AllowAny]
 
     def get(self, request):
         movie = Movie.objects.prefetch_related(
             Prefetch('movieimage_set', queryset=MovieImage.objects.filter(type__in=['poster']))
-        ).all().order_by('-ave_rate')[:15]
+        ).all().order_by('-ave_rate')
         serializer = MovieSliceSerializer(movie, many=True)
         return Response(serializer.data)
 
 
-class RecommendMoviesView(APIView):
+
+class RecommendMoviesView(APIView, MyPagination):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def get(self, request):
-        rcm = recommendations.recommend(int(request.user.id))
+        rcm = recommendations.recommend(request.user.id)
         try:
-            recs = random.sample(rcm, 10)
             result = []
-            for rec in recs:
+            for rec in rcm:
                 try:
                     movie = Movie.objects.prefetch_related(
                         Prefetch('movieimage_set', queryset=MovieImage.objects.filter(type__in=['poster']))
@@ -142,7 +155,8 @@ class RecommendMoviesView(APIView):
                     result.append(MovieSliceSerializer(movie).data)
                 except:
                     pass
-            return Response(result)
+            serializer = self.paginate_queryset(result, request)
+            return self.get_paginated_response(serializer)
         except:
             return Response(None)
 

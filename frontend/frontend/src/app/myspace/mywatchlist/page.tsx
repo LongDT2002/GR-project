@@ -112,11 +112,11 @@ const Watchlist = () => {
                                 <div className="h-48 min-w-[250px] overflow-visible">
                                     <Link href={`/movie/${movie.id}`}>
                                         <Image
-                                            src={posterpath + movie.images.poster}
-                                            alt={movie.images.poster}
+                                            src={posterpath + movie.poster}
+                                            alt={movie.poster}
                                             className="rounded-3xl shadow-lg"
-                                            width={400}
-                                            height={400}
+                                            width={250}
+                                            height={200}
                                             objectFit="cover"
                                             placeholder="blur"
                                             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM0dgn9DwADSwHNRhjk3gAAAABJRU5ErkJggg=="

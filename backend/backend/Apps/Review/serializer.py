@@ -2,12 +2,13 @@ from rest_framework import serializers
 from .models import Review, Vote
 from ..Rate.models import Rate
 from ..Profile.serializer import ProfileSerializer
-from ..Movie.serializer import MovieBannerSerializer
+from ..Movie.serializer import MovieSliceSerializer
 
 class ReviewSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     rate = serializers.SerializerMethodField()
     vote = serializers.SerializerMethodField()
+    own_vote = serializers.SerializerMethodField()
 
     def get_user(self, obj):
         return ProfileSerializer(obj.account.profile).data
@@ -20,6 +21,13 @@ class ReviewSerializer(serializers.ModelSerializer):
             'up': up,
             'down': down
         }
+
+    def get_own_vote(self, obj):
+        user = self.context['request'].user
+        try:
+            return Vote.objects.get(review=obj.id, account=user.id).vote
+        except Vote.DoesNotExist:
+            return None
 
     def get_rate(self, obj):
         try:
@@ -42,7 +50,7 @@ class ReviewPersonalViewSerializer(serializers.ModelSerializer):
     movie = serializers.SerializerMethodField()
 
     def get_movie(self, obj):
-        return MovieBannerSerializer(obj.movie).data
+        return MovieSliceSerializer(obj.movie).data
 
     class Meta:
         model = Review

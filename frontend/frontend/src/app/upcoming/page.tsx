@@ -6,34 +6,29 @@ import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-import Pagination from "@/components/Pagination";
 import Loader from "@/components/Loader";
 
 axios.defaults.baseURL = "http://127.0.0.1:8000";
 const posterpath = "https://image.tmdb.org/t/p/original";
 
-function Latest({ params }: { params: { pageid: string }}) {
+function Upcoming({ params }: { params: { pageid: string }}) {
     const [resultMovie, setResultMovie] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
     const router = useRouter();
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const api = requests.fetchLatestMovies + "?page=" + params.pageid;
-                const latestMovies = await axios.get(api)
+                const api = requests.fetchUpcoming;
+                const upcomingMovies = await axios.get(api)
                     .then((response) => {
                         return response.data;
                     })
                     .catch((error) => {
                         console.error("Error fetching movie data:", error);
                     });
-                const data = await latestMovies;
-                setResultMovie(data.results);
-                const totalpage = data.total_pages > 500 ? 500 : data.total_pages;
-                setTotalPages(totalpage);
+                const data = await upcomingMovies;
+                setResultMovie(data);
                 setLoading(false);
             } catch (error) {
                 console.error(error);
@@ -46,15 +41,10 @@ function Latest({ params }: { params: { pageid: string }}) {
         return <Loader />;
     }
 
-    const handlePageChange = (newPage: string) => {
-        setCurrentPage(Number(newPage));
-        router.push(`/latest/page/${newPage}`);
-    };
-
     return (
         <div className="w-full h-full p-5">
             <div className="heading mx-auto w-[90%]">
-                <h1 className="text-2xl">Latest Movies</h1>
+                <h1 className="text-2xl">Upcoming Movies</h1>
             </div>
             <div className="grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2 md:w-[90%] w-[95%] mx-auto">
                 {resultMovie.map((moviename: any, index) => (
@@ -92,14 +82,9 @@ function Latest({ params }: { params: { pageid: string }}) {
                     )
                 ))}
             </div>
-            <Pagination
-                currentPage={Number(params.pageid)}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-            />
         </div>
 
     );
 }
 
-export default Latest;
+export default Upcoming;

@@ -53,8 +53,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'storages',
-    "vote",
-    "django_extensions",
 
     #models
     'Apps.Account',
@@ -89,7 +87,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
     "DEFAULT_PAGINATION_CLASS": "Apps.Movie.views.MyPagination",
-    "PAGE_SIZE": 25,
+    "PAGE_SIZE": 15,
 }
 
 CORS_ALLOWED_ORIGINS = [
@@ -213,12 +211,11 @@ SIMPLE_JWT = {
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'USER_CREATE_PASSWORD_RETYPE': True,
-    'SET_PASSWORD_RETYPE': True,
     'SEND_ACTIVATION_EMAIL': True,
     'ACTIVATION_URL': 'auth/activate/{uid}/{token}',
     'SEND_CONFIRMATION_EMAIL': True,
-    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
-    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'auth/forgot/confirm/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
     'SERIALIZERS': {
         'user_create': 'Apps.Account.serializer.UserCreateSerializer',
@@ -227,15 +224,6 @@ DJOSER = {
         'user_delete': 'djoser.serializers.UserDeleteSerializer',
     },
 }
-
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('GOOGLE_OAUTH2_KEY')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('GOOGLE_OAUTH2_SECRET')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'openid',
-]
-SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
 # AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
 # AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
@@ -275,7 +263,6 @@ AUTHENTICATION_BACKENDS = (
 
 # settings.py
 
-from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
 UNFOLD = {
@@ -307,21 +294,6 @@ UNFOLD = {
         },
     },
 }
-
-
-# GRAPH_MODELS = {
-#     'app_labels': [
-#         'Apps.Account',
-#         'Apps.Actor',
-#         'Apps.Director',
-#         'Apps.Movie',
-#         'Apps.Rate',
-#         'Apps.Review',
-#         'Apps.Profile',
-#         'Apps.Watchlist',
-#     ],
-#     'group_models': True,
-# }
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/

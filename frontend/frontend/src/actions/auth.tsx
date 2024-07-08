@@ -41,7 +41,7 @@ export const login = async (email: string, password: string) => {
 }
 
 
-export const changePassword = async (new_password: string, re_new_password: string, current_password: string) => {
+export const changePassword = async (new_password: string, current_password: string) => {
     const token = localStorage.getItem('token');
     const config = {
         headers: {
@@ -50,7 +50,7 @@ export const changePassword = async (new_password: string, re_new_password: stri
             'Accept': 'application/json'
         }
     };
-    const body = JSON.stringify({new_password, re_new_password, current_password });
+    const body = JSON.stringify({new_password, current_password });
 
     return axios.post(auth_request.fetchChangePassword, body, config);
 }
@@ -68,10 +68,28 @@ export const resetPassword = async (email: string) => {
 }
 
 
+export const resetPasswordConfirm = async (uid: string, token: string, new_password: string, re_new_password: string) => {
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+    const body = JSON.stringify({ uid, token, new_password, re_new_password });
+
+    return axios.post(auth_request.fetchResetPasswordConfirm, body, config);
+}
+
+
 export const checkAuthenticated = () => {
     return new Promise(async (resolve, reject) => {
-        const token = localStorage.getItem('token');
-        if (token) {
+        let token;
+        try {
+            token = localStorage.getItem('token');
+        } catch (error) {
+            token = null;
+        }
+        
+        if (token != null) {
             const config = {
                 headers: {
                     'Content-Type': 'application/json',

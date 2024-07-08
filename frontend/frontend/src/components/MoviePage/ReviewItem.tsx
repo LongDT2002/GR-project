@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa6';
+import { PassThrough } from 'stream';
 
 axios.defaults.baseURL = "http://127.0.0.1:8000";
 
@@ -9,11 +10,11 @@ const token = localStorage.getItem("token");
 const api = "movie/review/";
 const config = {
     headers: {
-        "Content-Type": "application",
+        'Content-Type': 'application/json',
         "Authorization": `Bearer ${token}`,
+        'Accept': 'application/json'
     },
 };
-
 
 const ReviewItem = (review: any, index: number) => {
     const [reviewItem, setReviewItem] = useState(review.review);
@@ -23,77 +24,101 @@ const ReviewItem = (review: any, index: number) => {
     const [downVoteClicked, setDownVoteClicked] = useState(false);
 
     useEffect(() => {
+        if (review.review.own_vote) {
+            setUpVoteClicked(true);
+        } else if (review.review.own_vote == false) {
+            setDownVoteClicked(true);
+        }
+    }, [review.review.own_vote]);
+
+    useEffect(() => {
         setReviewItem(review.review);
     }, [reviewItem.vote.up, reviewItem.vote.down]);
 
     const handleUpVote = () => {
-        const body = {
-            "vote": "True",
-        }
+        const body = JSON.stringify({
+            "vote": "true"
+        })
 
         if(!upVoteClicked) {
             if (downVoteClicked) {
-                review.review.vote.down -= 1;
-                review.review.vote.up += 1;
-                setDownVote(review.review.vote.down);
-                setDownVoteClicked(false);
-                setUpVote(review.review.vote.up);
-                setUpVoteClicked(true);
+                axios.put(api + reviewItem.id + "/vote/", body, config)
+                    .then((response) => {
+                        review.review.vote.down -= 1;
+                        review.review.vote.up += 1;
+                        setDownVote(review.review.vote.down);
+                        setDownVoteClicked(false);
+                        setUpVote(review.review.vote.up);
+                        setUpVoteClicked(true);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
             } else {
-                review.review.vote.up += 1;
-                setUpVote(review.review.vote.up);
-                setUpVoteClicked(true);
+                axios.post(api + reviewItem.id + "/vote/", body, config)
+                    .then((response) => {
+                        review.review.vote.up += 1;
+                        setUpVote(review.review.vote.up);
+                        setUpVoteClicked(true);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
             }
-            
-            // axios.post(api + reviewItem.id + "/vote/", body, config)
-            //     .then(() => {
-            //         review.review.vote.up += 1;
-            //         setUpVote(review.review.vote.up);
-            //         setUpVoteClicked(true);
-            //     })
-            //     .catch((error) => {
-            //         setUpVoteClicked(false);
-            //         console.error(error);
-            //     });
         } else {
-            review.review.vote.up -= 1;
-            setUpVote(review.review.vote.up);
+            axios.delete(api + reviewItem.id + "/vote/", config)
+                .then((response) => {
+                    review.review.vote.up -= 1;
+                    setUpVote(review.review.vote.up);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
             setUpVoteClicked(false);
         }
     }
 
     const handleDownVote = () => {
-        const body = {
-            "vote": "False",
-        }
+        const body = JSON.stringify({
+            "vote": "false"
+        })
 
         if(!downVoteClicked) {
             if (upVoteClicked) {
-                review.review.vote.up -= 1;
-                review.review.vote.down += 1;
-                setUpVote(review.review.vote.up);
-                setUpVoteClicked(false);
-                setDownVote(review.review.vote.down);
-                setDownVoteClicked(true);
+                axios.put(api + reviewItem.id  + "/vote/", body, config)
+                    .then((response) => {
+                        review.review.vote.up -= 1;
+                        review.review.vote.down += 1;
+                        setUpVote(review.review.vote.up);
+                        setUpVoteClicked(false);
+                        setDownVote(review.review.vote.down);
+                        setDownVoteClicked(true);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
             } else {
-                review.review.vote.down += 1;
-                setDownVote(review.review.vote.down);
-                setDownVoteClicked(true);
+                axios.post(api + reviewItem.id  + "/vote/", body, config)
+                    .then((response) => {
+                        review.review.vote.down += 1;
+                        setDownVote(review.review.vote.down);
+                        setDownVoteClicked(true);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
             }
-            // axios.post(api + reviewItem.id  + "/vote/", body, config)
-            //     .then(() => {
-            //         review.review.vote.down += 1;
-            //         setDownVote(review.review.vote.down);
-            //         setDownVoteClicked(true);
-            //     })
-            //     .catch((error) => {
-            //         setDownVoteClicked(false);
-            //         console.error(error);
-            //     });
+
         } else {
-            review.review.vote.down -= 1;
-            setDownVote(review.review.vote.down);
-            setDownVoteClicked(false);
+            axios.delete(api + reviewItem.id + "/vote/", config)
+                .then((response) => {
+                    review.review.vote.down -= 1;
+                    setDownVote(review.review.vote.down);
+                    setDownVoteClicked(false);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
         }
     }
 
