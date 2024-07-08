@@ -3,16 +3,14 @@ from datetime import datetime
 import time
 
 from .models import Rate
-from .recommendation import CF
 from .serializer import RateSerializer
+from .recommendation import CF
 
 def recommend():
     data = Rate.objects.all()
-    serializer = RateSerializer(data, many=True)
-    r_cols = ['user_id', 'movie_id', 'rating']
-    
-    if len(serializer.data) > 0:
-        modified_data =[{k: item[k] for k in ['account', 'movie', 'rate', 'timestamp']} for item in serializer.data]
+    all_rate = RateSerializer(data, many=True).data
+    if data:
+        modified_data =[{k: item[k] for k in ['account', 'movie', 'rate', 'timestamp']} for item in all_rate]
         for item in modified_data:
             dt_object = datetime.strptime(item["timestamp"], "%Y-%m-%dT%H:%M:%S.%fZ")
             item["timestamp"] = int(time.mktime(dt_object.timetuple()))

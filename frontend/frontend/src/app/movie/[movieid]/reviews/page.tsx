@@ -7,6 +7,7 @@ import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
 import ReviewModal from "@/components/Review/ReviewModal";
 import Loader from "@/components/Loader";
 import requests from "@/utils/requests";
+import ReviewItem from "@/components/MoviePage/ReviewItem";
 
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
 
@@ -73,6 +74,9 @@ const Review = ({ params }: { params: { movieid: string } }) => {
         return (value / max) * 100;
     };
 
+    
+
+
     if (loading) {
         return <Loader />;
     }
@@ -86,51 +90,7 @@ const Review = ({ params }: { params: { movieid: string } }) => {
                         {movieReview.reviews.length > 0 ?
                             (movieReview.reviews.map(
                                 (review: any, index: number) => (
-                                    <div key={index} className="gap-5 py-6 sm:flex sm:items-start">
-                                        <div className="shrink-0 space-y-2 sm:w-32 md:w-56 max-w-64">
-                                            <div className="space-y-0.5">
-                                                { review.user.last_name ? (
-                                                    <p className="text-2xl font-semibold text-white">{review.user.first_name} {review.user.last_name}</p> 
-                                                ) : (
-                                                    <p className="text-2xl font-semibold text-white">User @{review.user.id}</p> 
-                                                )}
-                                                
-                                                <p className="text-xl font-normal text-white">{review.timestamp}</p>
-                                            </div>
-                                            <div className="flex items-center gap-0.5">
-                                                {Array.from({ length: review.rate }).map((_, index) => (
-                                                    <svg key={index} className="h-4 w-4 text-yellow-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-                                                    </svg>
-                                                ))}
-                                                {Array.from({ length: 5 - review.rate }).map((_, index) => (
-                                                    <svg key={index} className="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-                                                    </svg>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-4 min-w-0 flex-1 space-y-4 sm:mt-0">
-                                            <h1 className="text-2xl">Title: {review.title}</h1>
-                                            {review.spoiled ? (
-                                                <p className="text-xl font-bold text-white">Spoil Warning!!</p>
-                                            ) : ""}
-                                            <p className="text-xl font-normal text-white">Content: </p>
-                                            <p className="text-xl font-normal text-white">{review.content}</p>
-                                            <div className="flex items-center gap-4">
-                                                <p className="text-lg font-medium text-white">Was it helpful to you?</p>
-                                                <div className="flex items-center">
-                                                    <FaThumbsUp />
-                                                    <label htmlFor="reviews-radio-3" className="ms-2 text-lg font-medium text-gray-300">{review.vote.up}</label>
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <FaThumbsDown />
-                                                    <label htmlFor="reviews-radio-4" className="ms-2 text-lg font-medium text-gray-300">{review.vote.up}</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <ReviewItem review={review} index={index} />
                                 ))) : (<div className="gap-3 py-6 sm:flex sm:items-start">
                                     <p>There was no review here. Be the first</p>
                                 </div>)

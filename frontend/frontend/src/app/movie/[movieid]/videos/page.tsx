@@ -87,17 +87,21 @@ const MovieVideos = ({ params }: { params: { movieid: string } }) => {
         }
 
         return videosToRender.map((video: any, index: number) => (
-            <div key={index} className="relative aspect-w-16 pt-1.5 aspect-h-9 bg-slate-300 rounded-md">
+            <div key={index} className="rounded-md p-3 bg-slate-300 relative aspect-w-16 aspect-h-9">
                 <button key={index} onClick={() => handleLink(`https://www.youtube.com/embed${video.link}`)}>
                     <Image
                         src={`https://img.youtube.com/vi${video.link}/0.jpg`}
                         className="w-full"
                         alt={`${video.title}`}
-                        width={300}
-                        height={200}
+                        width={400}
+                        height={300}
                         objectFit="cover"
                     ></Image>
                 </button>
+                <div className="bg-gradient-to-t text-zinc-900 text-2xl px-[2%] py-[3%]">
+                    <b>{video.title}</b>
+                    <p>{video.type}</p>
+                </div>
             </div>
         ));
     };
@@ -113,7 +117,7 @@ const MovieVideos = ({ params }: { params: { movieid: string } }) => {
                         <div className="w-[80%]">
                             <div className="divide-y divide-gray-200">
                                 <div className="pt-6 pb-8 space-y-2 md:space-y-5">
-                                    <div className="grid gap-4 gap-y-6">
+                                    <div className="grid grid-cols-2 gap-4 gap-y-6">
                                         {renderVideo()}
                                     </div>
                                 </div>

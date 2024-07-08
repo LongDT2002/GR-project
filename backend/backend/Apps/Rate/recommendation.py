@@ -70,13 +70,4 @@ class CF(object):
                 rating = self.__pred(u, i)
                 if rating > 0:
                     recommended_items.append(i)        
-        return recommended_items 
-
-    def print_recommendation(self):
-        print ('Recommendation: ')
-        for u in range(self.n_users):
-            recommended_items = self.recommend(u)
-            if self.uuCF:
-                print ('    Recommend item(s):', recommended_items, 'for user', u)
-            else: 
-                print ('    Recommend item', u, 'for user(s) : ', recommended_items)
+        return recommended_items

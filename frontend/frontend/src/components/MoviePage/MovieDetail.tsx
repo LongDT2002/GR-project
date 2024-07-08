@@ -76,18 +76,18 @@ const MovieDetail = ({ movieDataAll }: { movieDataAll: any }) => {
                         </li>
                         <li>
                             <Trailer trailer={movieDataAll.trailer} />
-                        </li>   
+                        </li>
                     </ul>
                     <div>
                         <h1 className="text-2xl">Summary</h1>
                         <p className="text-lg font-light my-2 md:w-2/3 w-[95%] md:mx-0 mx-auto">{movieDataAll.summary}</p>
                     </div>
-                    <div className="mt-4 inline-block">
+                    { movieDataAll.director ? <div className="mt-4 inline-block">
                         <Link className="text-2xl hover:underline cursor" href={`/cast/director/${movieDataAll.director.id}`}>{movieDataAll.director.name}</Link>
                         <p className="text-lg font-light my-2 md:w-2/3 w-[95%] md:mx-0 mx-auto">
                             Director
                         </p>
-                    </div>
+                    </div> : ""}
                 </div>
             </div>
         </div>

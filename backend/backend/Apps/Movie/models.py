@@ -43,16 +43,16 @@ class Genre(models.Model):
 
 
 class Movie(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     release_date = models.DateField()
     duration = models.IntegerField()
     ave_rate = models.FloatField(default=0.0)
     summary = models.CharField(max_length=2000, blank=True, null=True)
     synopsis = models.TextField(max_length=20000, blank=True, null=True)
-    revenue = models.IntegerField(default=0)
-    budget = models.IntegerField(default=0)
+    revenue = models.BigIntegerField(default=0)
+    budget = models.BigIntegerField(default=0)
     original_country = CountryField(blank_label="(select country)", blank=True)
-    director = models.ForeignKey("Director.Director", on_delete=models.CASCADE, related_name="movie_director")
+    director = models.ForeignKey("Director.Director", on_delete=models.CASCADE, related_name="movie_director", null=True)
 
     def __str__(self):
         return self.title
@@ -88,7 +88,7 @@ class MovieVideo(models.Model):
     ]
 
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="movievideo_set")
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=200)
     link = models.FileField(null=True, blank=True)
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
 

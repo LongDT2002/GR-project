@@ -130,27 +130,40 @@ class RecommendMoviesView(APIView):
     authentication_classes = [JWTAuthentication]
 
     def get(self, request):
-        recs = recommendations.recommend(int(request.user.id))[:10]
-        result = []
-        for rec in recs:
-            try:
-                movie = Movie.objects.prefetch_related(
-                    Prefetch('movieimage_set', queryset=MovieImage.objects.filter(type__in=['poster']))
-                ).get(pk=rec)
-                result.append(MovieSliceSerializer(movie).data)
-            except:
-                pass
-        return Response(result)
+        rcm = recommendations.recommend(int(request.user.id))
+        try:
+            recs = random.sample(rcm, 10)
+            result = []
+            for rec in recs:
+                try:
+                    movie = Movie.objects.prefetch_related(
+                        Prefetch('movieimage_set', queryset=MovieImage.objects.filter(type__in=['poster']))
+                    ).get(pk=rec)
+                    result.append(MovieSliceSerializer(movie).data)
+                except:
+                    pass
+            return Response(result)
+        except:
+            return Response(None)
 
+from .utils import recommend
 
 class RelatedMoviesView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, pk):
-        
-        related = Movie.objects.filter(pk=25).exclude(pk=pk)
-        serializer = MovieSliceSerializer(related, many=True)
-        return Response(serializer.data)
+        movie_id = Movie.objects.get(pk=pk).id
+        related = recommend(movie_id)
+        result = []
+        for idx in related:
+            try:
+                movie = Movie.objects.prefetch_related(
+                    Prefetch('movieimage_set', queryset=MovieImage.objects.filter(type__in=['poster']))
+                ).get(pk=idx+1)
+                result.append(MovieSliceSerializer(movie).data)
+            except:
+                pass
+        return Response(result)
 
 
 from elasticsearch_dsl import Q

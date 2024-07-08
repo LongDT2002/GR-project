@@ -4,11 +4,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from ..Movie.models import Movie
-from ..Movie.serializer import MovieUpdateSerializer
 from .models import Rate
 from .serializer import (
     RateSerializer,
-    AllPersonalRateSerializer
+    AllPersonalRateSerializer,
+    MovieWithRateSerializer
 )
 
 
@@ -33,7 +33,7 @@ class RatePersonal(APIView):
             try:
                 serializer.save()
                 movie = Movie.objects.get(pk=request.data["movie"])
-                movie_serializer = MovieUpdateSerializer(movie, data={"ave_rate": movie.average_rating()})
+                movie_serializer = MovieWithRateSerializer(movie, data={"ave_rate": movie.average_rating()})
                 if movie_serializer.is_valid():
                     movie_serializer.save()
                 return Response({'message': 'Rate created'}, status=201)
@@ -47,7 +47,7 @@ class RatePersonal(APIView):
         serializer = RateSerializer(rate, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            movie_serializer = MovieUpdateSerializer(movie, data={"ave_rate": movie.average_rating()})
+            movie_serializer = MovieWithRateSerializer(movie, data={"ave_rate": movie.average_rating()})
             if movie_serializer.is_valid():
                 movie_serializer.save()
             return Response({'message': 'Rate updated'}, status=200)
@@ -57,7 +57,7 @@ class RatePersonal(APIView):
         movie = Movie.objects.get(pk=pk)
         rate = Rate.objects.get(movie=movie, account=request.user)
         rate.delete()
-        movie_serializer = MovieUpdateSerializer(movie, data={"ave_rate": movie.average_rating()})
+        movie_serializer = MovieWithRateSerializer(movie, data={"ave_rate": movie.average_rating()})
         if movie_serializer.is_valid():
             movie_serializer.save()
         return Response({'message': 'Rate deleted'}, status=204)
