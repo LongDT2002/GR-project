@@ -28,7 +28,7 @@ async function getLatestMovies() {
     const api = requests.fetchLatestMovies;
     const latestMovies = axios.get(api)
         .then((response) => {
-            return response.data;
+            return response.data.results;
         })
         .catch((error) => {
             console.error("Error fetching movie data:", error);
@@ -64,10 +64,11 @@ async function getRecommendMovies() {
 
     const recommendMovies = axios.get(api, config)
         .then((response) => {
-            return response.data;
+            return response.data.results;
         })
         .catch((error) => {
             console.error("Error fetching movie data:", error);
+            return null;
         });
     return recommendMovies;
 }
@@ -104,10 +105,10 @@ const Home = () => {
             ]);
             
             setTrendingMovieData(trendingMovie);
-            setLatestMoviesData(latestMovies.results);
+            setLatestMoviesData(latestMovies);
             setTopRatedData(topRated);
             setUpcomingMoviesData(upComing);
-            setRecommendMoviesData(recommendMovies.results);
+            setRecommendMoviesData(recommendMovies);
             setLoading(false);
         };
         fetchData();

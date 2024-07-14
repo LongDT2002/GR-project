@@ -66,6 +66,7 @@ const WatchlistIcon = ({ favMovie }: { favMovie: string }) => {
             });
         setIsFavorited(false);
     };
+    
     return (
         <div>
             {isFavorited ? (

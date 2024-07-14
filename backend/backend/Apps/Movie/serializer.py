@@ -6,8 +6,21 @@ from ..Actor.models import ActorImage
 from ..Actor.serializer import ActorSliceSerializer
 
 
-class MovieWithGenreSerializer(serializers.ModelSerializer):
+class MovieDataForContentBased(serializers.ModelSerializer):
     genres = serializers.SerializerMethodField()
+    actors = serializers.SerializerMethodField()
+    director = serializers.SerializerMethodField()
+
+    def get_director(self, obj):
+        try:
+            return obj.director.name
+        except:
+            return None
+
+    def get_actors(self, obj):
+        actors = Movie_Actor.objects.filter(movie=obj)
+        actor_list = [actor.actor.name for actor in actors]
+        return actor_list
 
     def get_genres(self, obj):
         genres = Movie_Genre.objects.filter(movie=obj)
@@ -16,7 +29,7 @@ class MovieWithGenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Movie
-        fields = ['id', 'title', 'summary', 'genres']
+        fields = ['id', 'title', 'summary', 'genres', 'actors', 'director']
 
 
 class MovieSerializer(serializers.ModelSerializer):

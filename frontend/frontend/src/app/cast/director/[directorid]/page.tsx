@@ -8,7 +8,6 @@ import MovieCarousel from "@/components/EmblaCarousel/MovieCarousel";
 import Loader from '@/components/Loader';
 import requests from "@/utils/requests";
 
-
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
 const personimgpath = "https://image.tmdb.org/t/p/original";
 
@@ -18,7 +17,6 @@ async function getPersonDetails(directorid: string) {
         .then((response) => {
             return response.data;
         })
-
     return ActorApiresponse;
 }
 
@@ -28,20 +26,19 @@ async function getPersonImages(directorid: string) {
         .then((response) => {
             return response.data;
         })
-
     return PersonsImgresponse;
 }
+
 async function getPersonMovies(directorid: string) {
     const api = requests.fetchDirectorDetails + directorid+ "/movies/";
     const PersonsMovieresponse = await axios.get(api)
         .then((response) => {
             return response.data;
         })
-
     return PersonsMovieresponse;
 }
 
-const Actor = ({ params }: { params: any }) => {
+const Director = ({ params }: { params: any }) => {
     const [personDetails, setPersonDetails] = useState<any>({});
     const [personImages, setPersonImages] = useState<any>([]);
     const [personMovies, setPersonMovies] = useState<any>([])
@@ -58,7 +55,7 @@ const Actor = ({ params }: { params: any }) => {
 
                 setPersonDetails(personData);
                 setPersonImages(personImgData);
-                setPersonMovies(personMoviesData);
+                setPersonMovies(personMoviesData);;
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching actor data:', error);
@@ -157,4 +154,4 @@ const Actor = ({ params }: { params: any }) => {
     );
 };
 
-export default Actor;
+export default Director;

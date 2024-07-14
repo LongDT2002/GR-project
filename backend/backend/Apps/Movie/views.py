@@ -160,6 +160,7 @@ class RecommendMoviesView(APIView, MyPagination):
         except:
             return Response(None)
 
+
 from .utils import recommend
 
 class RelatedMoviesView(APIView):
@@ -183,16 +184,35 @@ class RelatedMoviesView(APIView):
 from elasticsearch_dsl import Q
 from .documents import MovieDocument
 
-
 class SearchMovieView(APIView):
     permission_classes = [AllowAny]
     document_class = MovieDocument
-
-    def generate_q_expression(self, query):
-        return Q("multi_match", query=query, fields=["title"], fuzziness="AUTO")
     
-    def get(self, request, query):
-        q = self.generate_q_expression(query)
+    def generate_q_expression(self, query, release_date=None):
+        must_conditions = []
+
+        if query:
+            must_conditions.append(Q("multi_match", query=query, fields=["title"], fuzziness="AUTO"))
+
+        if release_date:
+            release_date = release_date.split(",")
+            if len(release_date) == 1:
+                must_conditions.append(Q("range", release_date={"gte": release_date[0]}))
+            else:
+                release_date_range = {}
+                release_date_range["gte"] = release_date[0]
+                release_date_range["lte"] = release_date[1]
+                must_conditions.append(Q("range", release_date=release_date_range))
+
+        if not must_conditions:
+            return None
+
+        return Q("bool", must=must_conditions)
+    
+    def get(self, request):
+        query = request.query_params.get("query")
+        release_date = request.query_params.get("release_date")
+        q = self.generate_q_expression(query, release_date)
         if not q:
             return Response({"error": "query is required"}, status=400)
         search = self.document_class.search().query(q)

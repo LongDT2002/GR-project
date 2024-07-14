@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import Trailer from "./Trailer";
 import WatchlistIcon from "./WatchlistIcon";
-import ListIcon from "./ListIcon";
+import BigTextContent from "@/components/BigTextContent";
 import RateModal from "@/components/Review/RateModal";
 
 const bannerpath = "https://image.tmdb.org/t/p/original/";
@@ -30,7 +30,7 @@ const MovieDetail = ({ movieDataAll }: { movieDataAll: any }) => {
             <div className="movieDetails p-3 flex items-center md:justify-start justify-center flex-initial overflow-x-hidden md:w-2/3 w-full">
                 <div className="movieDetailsInner md:text-left text-center">
                     {movieDataAll.images &&
-                        movieDataAll.images.logo && (
+                        movieDataAll.images.logo ? (
                             <Image
                                 src={`${posterpath}${movieDataAll.images.logo}`}
                                 alt={movieDataAll.title}
@@ -39,18 +39,14 @@ const MovieDetail = ({ movieDataAll }: { movieDataAll: any }) => {
                                 className="md:mx-0 mx-auto"
                                 unoptimized
                             />
-                        )}
-                    <h1 className="text-4xl font-bold md:w-3/4 w-[90%] md:mx-0 mx-auto my-4">
-                        {movieDataAll.title}
-                    </h1>
-                    <p className="italic text-slate-300">
-                        {movieDataAll.tagline ? movieDataAll.tagline : ""}
-                    </p>
-                    <ul className="flex gap-5 text-slate-300 md:justify-start justify-center md:w-full w-[95%] md:mx-0 mx-auto px-2 overflow-x-scroll no-scrollbar">
+                        ): (<h1 className="text-4xl font-bold md:w-3/4 w-[90%] md:mx-0 mx-auto my-4">
+                            {movieDataAll.title}
+                        </h1>)}
+                    <ul className="flex gap-5 mt-4 text-slate-300 md:justify-start justify-center md:w-full w-[95%] md:mx-0 mx-auto px-2 overflow-x-scroll no-scrollbar">
                         {movieDataAll.genres &&
                             movieDataAll.genres.map((genre: any, index: React.Key | null | undefined) => (
                                 <Link key={index} href={`/genre/${genre.id}/page/1`}>
-                                    <li className="my-2 px-3 py-1 rounded-3xl whitespace-nowrap bg-slate-800 w-fit text-md">
+                                    <li className="my-2 px-3 py-1 rounded-3xl whitespace-nowrap bg-slate-800 w-fit text-lg">
                                         {genre.name}
                                     </li>
                                 </Link>
@@ -80,7 +76,9 @@ const MovieDetail = ({ movieDataAll }: { movieDataAll: any }) => {
                     </ul>
                     <div>
                         <h1 className="text-2xl">Summary</h1>
-                        <p className="text-lg font-light my-2 md:w-2/3 w-[95%] md:mx-0 mx-auto">{movieDataAll.summary}</p>
+                        <p className="text-lg font-light my-2 md:w-2/3 w-[95%] md:mx-0 mx-auto">
+                            <BigTextContent textData={movieDataAll.summary} />
+                        </p>
                     </div>
                     { movieDataAll.director ? <div className="mt-4 inline-block">
                         <Link className="text-2xl hover:underline cursor" href={`/cast/director/${movieDataAll.director.id}`}>{movieDataAll.director.name}</Link>

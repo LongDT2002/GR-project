@@ -8,7 +8,7 @@ axios.defaults.baseURL = "http://127.0.0.1:8000/";
 const posterpath = "https://image.tmdb.org/t/p/original/";
 
 async function getSearchMovieData(searchParams: any) {
-    const searchMovie = axios.get(`/movie/search/${searchParams.search}`)
+    const searchMovie = axios.get(`/movie/search/?query=${searchParams.search}`)
         .then((response) => {
             return response.data;
         })

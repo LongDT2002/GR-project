@@ -68,7 +68,7 @@ class Movie(models.Model):
 class Movie_Actor(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="movie_actor")
     actor = models.ForeignKey("Actor.Actor", on_delete=models.CASCADE, related_name="actor_movie")
-    character_name = models.CharField(max_length=50)
+    character_name = models.CharField(max_length=300)
 
 
 class Movie_Genre(models.Model):

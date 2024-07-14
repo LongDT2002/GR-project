@@ -1,7 +1,5 @@
 "use client"
-
 import { useLayoutEffect, useState, useRef } from "react";
-
 
 const useTruncatedElement = ({ ref }: any) => {
     const [isTruncated, setIsTruncated] = useState(false);

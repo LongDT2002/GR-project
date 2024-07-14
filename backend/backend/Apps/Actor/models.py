@@ -6,7 +6,7 @@ class Actor(models.Model):
     name = models.CharField(max_length=50)
     birthday = models.DateField(null=True, blank=True)
     deathday = models.DateField(null=True, blank=True)
-    place_of_birth = models.CharField(max_length=50, null=True, blank=True)
+    place_of_birth = models.CharField(max_length=100, null=True, blank=True)
     biography = models.TextField(null=True, blank=True)
 
     def __str__(self) -> str:

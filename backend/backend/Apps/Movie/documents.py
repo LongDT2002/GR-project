@@ -6,6 +6,12 @@ from .models import Movie
 @registry.register_document
 class MovieDocument(Document):
     poster = fields.TextField()
+    actors = fields.NestedField(properties={
+        'id': fields.IntegerField(),
+        'name': fields.TextField(),
+        'image': fields.TextField()
+    })
+
     class Index:
         name = "movies"
         settings = {
@@ -25,6 +31,15 @@ class MovieDocument(Document):
 
     def prepare_poster(self, instance):
         poster = instance.movieimage_set.filter(type="poster").first()
-        if poster:
+        if poster and poster.image:
             return poster.image.url
         return None
+
+    def prepare_actors(self, instance):
+        return [
+            {
+                'id': actor.actor.id,
+                'name': actor.actor.name,
+                'image': actor.actor.actor_images.first().image.url if actor.actor.actor_images.first() and actor.actor.actor_images.first().image else None
+            } for actor in instance.movie_actor.all()[:10]
+        ]

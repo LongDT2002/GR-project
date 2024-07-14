@@ -21,7 +21,9 @@ class ActorDocument(Document):
         ]
 
     def prepare_image(self, instance):
-        image = instance.actor_images.all().first()
-        if image:
+        try:
+            image = instance.actor_images.all().first()
             return image.image.url
-        return None
+        except:
+            return None
+

@@ -6,7 +6,7 @@ class Director(models.Model):
     name = models.CharField(max_length=50)
     birthday = models.DateField(null=True, blank=True)
     deathday = models.DateField(null=True, blank=True)
-    place_of_birth = models.CharField(null=True, blank=True, max_length=50)
+    place_of_birth = models.CharField(null=True, blank=True, max_length=100)
     biography = models.TextField(null=True, blank=True)
 
     def __str__(self) -> str:

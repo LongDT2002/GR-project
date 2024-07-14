@@ -14,5 +14,5 @@ urlpatterns = [
     path('recommend/', views.RecommendMoviesView.as_view(), name='recommend-movies'),
     path("genres/", views.GenreListView.as_view(), name="genres"),
     path("genre/<int:pk>/", views.MovieByGenreView.as_view(), name="movies-genre"),
-    path("search/<str:query>", views.SearchMovieView.as_view(), name="search"),
+    path("search/", views.SearchMovieView.as_view(), name="search"),
 ]
