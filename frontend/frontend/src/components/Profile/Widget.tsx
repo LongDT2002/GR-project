@@ -71,12 +71,6 @@ const Widget = () => {
                         <p className="text-zinc-700">Member since March 2024</p>
                     </div>
                 </div>
-                {/* <div className="flex space-x-8 mt-4">
-                    <div className="text-center">
-                        <div className="text-zinc-700 text-3xl font-bold">0%</div>
-                        <p className="text-zinc-700">Average Movie Score</p>
-                    </div>
-                </div> */}
             </div>
             <div className="bg-zinc-200 ">
                 <div className="relative flex justify-center items-center border-b border-zinc-300 dark:border-zinc-700">

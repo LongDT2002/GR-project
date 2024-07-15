@@ -106,7 +106,7 @@ const Ratings = () => {
                 <div className="flex flex-col justify-center items-center">
                     {ratings.map((rating: any) => (
                         <div className="pb-3 w-[70%] min-h-[430px]">
-                            <div className="bg-white shadow-lg border-gray-400 max-h-80 border sm:rounded-3xl p-8 flex space-x-10 relative">
+                            <div className="bg-white shadow-lg border-gray-400 border sm:rounded-3xl p-8 flex space-x-10 relative">
                                 <div className="h-48 min-w-[250px] overflow-visible">
                                     <Link href={`/movie/${rating.movie.id}`}>
                                         <Image

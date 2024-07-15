@@ -132,7 +132,7 @@ const Watchlist = () => {
                                     <div>
                                         <div className="text-lg text-gray-800">{movie.release_date}</div>
                                     </div>
-                                    <p className=" text-zinc-900 max-h-40 overflow-y-hidden">{movie.summary}</p>
+                                    <p className=" text-zinc-900 overflow-y-hidden">{movie.summary}</p>
                                     <ul className="flex gap-5 text-slate-300 sm:justify-start justify-center my-2">
                                         <li className="flex items-center justify-center">
                                             <RateModal movieId={movie.id} movieTitle={movie.title} />

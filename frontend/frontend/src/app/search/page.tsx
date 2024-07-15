@@ -1,9 +1,10 @@
 "use client"
+import Image from "next/image"
 
 const Search = () => {
     return (
-        <div style={{ background: "linear-gradient(to bottom, transparent, black),url(/assets/img/search_back.jpg)", height: "100vh", width: "100%" }} className="flex items-center overflow-hidden justify-center bg-center bg-cover bg-no-repeat">
-            <div className="w-3/5">
+        <div className="flex flex-col items-center justify-center">
+            {/* <div className="w-3/5">
                 <form action="search/result" method="get">
                     <label htmlFor="default-search" className="mb-2 font-medium text-gray-900 sr-only">Search</label>
                     <div className="relative grid grid-cols-9 text-2xl">
@@ -17,6 +18,18 @@ const Search = () => {
                         <button type="submit" className="text-white absolute right-2.5 bottom-2.5 bg-neutral-700 hover:bg-neutral-800 focus:ring-4 focus:outline-none focus:ring-neutral-300 font-medium rounded-lg text-xl px-4 py-2">Search</button>
                     </div>
                 </form>
+            </div> */}
+
+            <Image
+                src="/placeholder_popcorn.png"
+                alt="popcorn"
+                height={500}
+                width={500}
+                objectFit="cover"
+            />
+            <div className="text-3xl text-white mt-4">Create a more specific title search</div>
+            <div className="text-xl text-white mt-4 text-center">
+                Create a search using a variety of options to filter the different types of information we have in our catalog.
             </div>
         </div>
     )

@@ -40,6 +40,9 @@ const Reviews = () => {
     useEffect(() => {
         const fetchData = async () => {
             const reviewsData = await getAllReviews();
+            reviewsData.sort((a: any, b: any) => {
+                return (new Date(b.timestamp) as any) - (new Date(a.timestamp) as any);
+            });
             setReviews(reviewsData);
             setLoading(false);
         };
@@ -112,7 +115,7 @@ const Reviews = () => {
                 <div className="flex flex-col justify-center items-center">
                     {reviews.map((review: any) => (
                         <div className="pb-3 w-[70%] min-h-[430px]">
-                            <div className="bg-white shadow-lg border-gray-400 max-h-80 border sm:rounded-3xl p-8 flex space-x-10 relative">
+                            <div className="bg-white shadow-lg border-gray-400 border sm:rounded-3xl p-8 flex space-x-10 relative">
                                 <div className="h-48 min-w-[250px] overflow-visible">
                                     <Link href={`/movie/${review.movie.id}`}>
                                         <Image

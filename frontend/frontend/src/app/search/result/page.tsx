@@ -8,7 +8,16 @@ axios.defaults.baseURL = "http://127.0.0.1:8000/";
 const posterpath = "https://image.tmdb.org/t/p/original/";
 
 async function getSearchMovieData(searchParams: any) {
-    const searchMovie = axios.get(`/movie/search/?query=${searchParams.search}`)
+    const formatDate = (date: string | null) => {
+        if (date === null || date === '') return new Date();
+        return new Date(date).toLocaleDateString("fr-CA");
+    }
+
+    const search = searchParams.search;
+    const dateFrom = searchParams.dateFrom ? formatDate(searchParams.dateFrom) : "";
+    const dateTo = searchParams.dateTo ? formatDate(searchParams.dateTo) : "";
+
+    const searchMovie = axios.get(`/movie/search/?query=${search}` + (dateFrom != "" ? `&release_date=${dateFrom},${dateTo}` : ""))
         .then((response) => {
             return response.data;
         })
@@ -26,6 +35,7 @@ async function getSearchActorData(searchParams: any) {
         .catch((error) => {
             return error;
         });
+
     return searchActor;
 }
 
@@ -62,80 +72,71 @@ const Results = ({ searchParams }: { searchParams: any }) => {
 
     return (
         <div>
-            <div className="w-[90%] m-auto h-screen p-3">
-                <h1 className="text-center text-3xl my-5">
-                    Search Results For:{" "}
-                    <span className="font-bold capitalize">{searchParams.search}</span>
-                </h1>
-
-                {searchParams.type === "Movie" ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:grid-cols-5">
-                        {movieData.map((movie: any, index: number) =>
-                            <div key={index} className="m-4 mb-8 px-4 mx-auto">
-                                <div className="flex flex-col h-full rounded-lg bg-gray-200 shadow-lg">
-                                    <Link href={`/movie/${movie.id}`} className="flex flex-col flex-grow">
-                                        <div className="oot-card p-2 flex-grow">
-                                            { movie.poster ?
-                                                <Image
-                                                    src={posterpath + movie.poster}
-                                                    width={400}
-                                                    height={400}
-                                                    alt={`Movie_${index}`}
-                                                    className="mx-auto h-[400px] object-cover"
-                                                    placeholder="blur"
-                                                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM0dgn9DwADSwHNRhjk3gAAAABJRU5ErkJggg=="
-                                                    unoptimized
-                                                /> : <div className="h-[400px] w-[250px] bg-gray-300"></div>}
-                                        </div>
-                                        <div className="p-4 flex flex-col flex-grow">
-                                            <div className="flex justify-between mb-2">
-                                                <h2 className="text-lg text-gray-700 font-semibold">{movie.title}</h2>
-                                                <p className="text-lg text-gray-700 font-semibold flex items-center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" className="pb-0.5 w-3.5 h-3.5 mr-1 flex-shrink-0">
-                                                        <path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z" />
-                                                    </svg>
-                                                    <span>{movie.ave_rate.toFixed(1)}</span>
-                                                </p>
-                                            </div>
-                                            <p className="mb-4 text-md text-gray-700">Release: {movie.release_date}</p>
-                                        </div>
+            {searchParams.type === "Movie" ? (
+                <div className="flex flex-col justify-center items-center">
+                    {movieData.length > 0 && movieData.map((movie: any) => (
+                        <div className="pb-3 w-[70%] min-h-[200px]">
+                            <div className="bg-slate-200 shadow-lg border-gray-400 border sm:rounded-3xl p-7 flex space-x-10">
+                                <div className="min-w-[180px] overflow-visible">
+                                    <Link href={`/movie/${movie.id}`}>
+                                        <Image
+                                            src={posterpath + movie.poster}
+                                            alt={movie.poster}
+                                            className="rounded-3xl shadow-lg"
+                                            width={175}
+                                            height={175}
+                                            objectFit="cover"
+                                            placeholder="blur"
+                                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM0dgn9DwADSwHNRhjk3gAAAABJRU5ErkJggg=="
+                                            unoptimized
+                                        />
                                     </Link>
                                 </div>
-                            </div>
-                        )}
-                    </div>) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:grid-cols-5">
-                        {personData.map((person: any, index: number) =>
-                            <div key={index} className="m-4 mb-8 px-4 mx-auto">
-                                <div className="flex flex-col h-full rounded-lg bg-gray-200 shadow-lg">
-                                    <Link href={`${searchParams.type == "Actor" ? `/cast/actor/${person.id}` : `/cast/director/${person.id}`}`}
-                                        className="flex flex-col flex-grow">
-                                        <div className="oot-card p-2 flex-grow">
-                                            { person.image ? <Image
-                                                src={posterpath + person.image}
-                                                width={400}
-                                                height={400}
-                                                alt={`Movie_${index}`}
-                                                className="mx-auto h-[400px] object-cover"
-                                                placeholder="blur"
-                                                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM0dgn9DwADSwHNRhjk3gAAAABJRU5ErkJggg=="
-                                                unoptimized
-                                            /> : <div className="h-[400px] w-[250px] bg-gray-300"></div>}
-                                        </div>
-                                        <div className="p-4 flex flex-col flex-grow">
-                                            <div className="flex justify-between mb-2">
-                                                <h2 className="text-lg text-gray-700 font-semibold">{person.name}</h2>
-                                            </div>
-                                        </div>
-                                    </Link>
+                                <div className="flex flex-col space-y-4">
+                                    <div className="flex justify-between items-start">
+                                        <h2 className="text-zinc-900 text-3xl font-bold">{movie.title}</h2>
+                                        <div className="bg-yellow-400 font-bold rounded-xl p-2 text-black">{movie.ave_rate.toFixed(1) + "/ " + "5.0"}</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-xl text-gray-800">Realease date: {movie.release_date}</div>
+                                    </div>
+                                    <p className="text-xl text-zinc-900 overflow-y-hidden">{movie.summary}</p>
                                 </div>
                             </div>
-                        )}
-                    </div>
-                )}
-
-            </div>
-        </div>
+                        </div>))}
+                </div>
+            ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:grid-cols-4 w-[90%]">
+                    {personData.length > 0 && personData.map((person: any, index: number) =>
+                        <div key={index} className="m-4 mb-8 px-4 mx-auto">
+                            <div className="flex flex-col h-full rounded-lg bg-gray-200 shadow-lg">
+                                <Link href={`${searchParams.type == "Actor" ? `/cast/actor/${person.id}` : `/cast/director/${person.id}`}`}
+                                    className="flex flex-col flex-grow">
+                                    <div className="oot-card p-2 flex-grow">
+                                        {person.image ? <Image
+                                            src={posterpath + person.image}
+                                            width={400}
+                                            height={400}
+                                            alt={`Movie_${index}`}
+                                            className="mx-auto h-[400px] object-cover"
+                                            placeholder="blur"
+                                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM0dgn9DwADSwHNRhjk3gAAAABJRU5ErkJggg=="
+                                            unoptimized
+                                        /> : <div className="h-[400px] w-[250px] bg-gray-300"></div>}
+                                    </div>
+                                    <div className="p-4 flex flex-col flex-grow">
+                                        <div className="flex justify-between mb-2">
+                                            <h2 className="text-lg text-gray-700 font-semibold">{person.name}</h2>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )
+            }
+        </div >
     );
 }
 
