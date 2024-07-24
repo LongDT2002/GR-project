@@ -138,7 +138,6 @@ class TopRatedMoviesView(APIView, MyPagination):
         return Response(serializer.data)
 
 
-
 class RecommendMoviesView(APIView, MyPagination):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
